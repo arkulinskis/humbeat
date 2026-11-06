@@ -305,15 +305,15 @@ db_schema:
     server: full
     title: Users
 metadata:
-  description: 'Make any song in your browser: pick a style from hopecore to heavy metal, record your voice with auto-tune,
-    and hum a melody that becomes any instrument.'
-  logo_img: asset:icon-512.png
-  title: 'Humbeat: hum a tune, make it a song, in your browser'
+  description: "Make any song in your browser: pick a style from hopecore to heavy metal, record your voice with auto-tune, and hum a melody that becomes any instrument."
+  logo_img: "asset:icon-512.png"
+  title: "Humbeat: hum a tune, make it a song, in your browser"
 name: Humbeat
 native_deps:
   head_html: |
     <script src="_/theme/legal-kit.js?v=d4c784e827"></script>
     <!-- seo:start (APP_MAKER/seo: edit seo/apps/humbeat.json and run seo.py, not here) -->
+    <link rel="canonical" href="https://humbeat.anvil.app/">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta name="keywords" content="make a song online, hum to midi, humming to notes, online auto-tune, free music maker in browser, beatbox to drums, make a trap beat online, beginner music production, record vocals online, song maker for beginners">
     <meta name="author" content="Arkvital">
@@ -322,9 +322,16 @@ native_deps:
     <meta property="og:title" content="Humbeat: hum a tune, make it a song, in your browser">
     <meta property="og:description" content="Make any song in your browser: pick a style from hopecore to heavy metal, record your voice with auto-tune, and hum a melody that becomes any instrument.">
     <meta property="og:locale" content="en_CA">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:url" content="https://humbeat.anvil.app/">
+    <meta property="og:image" content="https://humbeat.anvil.app/_/theme/og-image.png">
+    <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Humbeat: Hum it. Humbeat makes it a song">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Humbeat: hum a tune, make it a song, in your browser">
     <meta name="twitter:description" content="Make any song in your browser: pick a style from hopecore to heavy metal, record your voice with auto-tune, and hum a melody that becomes any instrument.">
+    <meta name="twitter:image" content="https://humbeat.anvil.app/_/theme/og-image.png">
+    <link rel="alternate" type="text/plain" title="Humbeat for AI assistants" href="https://humbeat.anvil.app/llms.txt">
+    <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "@id": "https://humbeat.anvil.app/#app", "name": "Humbeat", "url": "https://humbeat.anvil.app/", "description": "Make any song in your browser: pick a style from hopecore to heavy metal, record your voice with auto-tune, and hum a melody that becomes any instrument.", "image": "https://humbeat.anvil.app/_/theme/og-image.png", "inLanguage": "en", "publisher": {"@id": "https://arkvital.com/#org"}, "keywords": "make a song online, hum to midi, humming to notes, online auto-tune, free music maker in browser, beatbox to drums, make a trap beat online, beginner music production, record vocals online, song maker for beginners", "applicationCategory": "MultimediaApplication", "operatingSystem": "Any (web browser)", "browserRequirements": "Requires JavaScript and a modern web browser", "featureList": ["18 styles with real arrangements: hopecore, mumble rap, heavy metal, 80s dance pop, Y2K teen pop, storyteller pop, lo-fi, drill and more", "Record your voice with auto-tune, harmony, doubling, character and effects, all on your own device", "Hum a melody and it becomes notes for any of 26 instruments", "Beatbox a beat and it becomes a drum part", "A Word-style ribbon: Home, Insert, Record, Voice, Instrument, Effects, Song, Lyrics, Mix", "Piano roll, drum grid and a voice view that shows your pitch before and after tuning", "Chords, song structure and transitions (drum fills, risers, drops) in a click", "Lyrics pane with syllable counts, rhymes and a prompter while you record", "Export a WAV mix or a MIDI file, or share a listen link", "Free, no download, works without an account"], "offers": {"@type": "Offer", "price": "0", "priceCurrency": "CAD"}, "audience": {"@type": "Audience", "audienceType": "People who have songs in their head but don't know music production: singers, rappers, songwriters, beginners and hobbyists"}}, {"@type": "WebSite", "@id": "https://humbeat.anvil.app/#site", "url": "https://humbeat.anvil.app/", "name": "Humbeat", "publisher": {"@id": "https://arkvital.com/#org"}}, {"@type": "Organization", "@id": "https://arkvital.com/#org", "name": "Arkvital", "url": "https://arkvital.com", "email": "arkvital@outlook.com", "address": {"@type": "PostalAddress", "addressLocality": "Montreal", "addressRegion": "QC", "addressCountry": "CA"}}]}</script>
     <!-- seo:end -->
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">

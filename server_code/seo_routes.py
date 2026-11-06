@@ -72,7 +72,7 @@ SEO = {
   ]
  ],
  "free": True,
- "site": "",
+ "site": "https://humbeat.anvil.app",
  "updated": "2026-11-06",
  "icon": "icon-512.png",
  "colors": {

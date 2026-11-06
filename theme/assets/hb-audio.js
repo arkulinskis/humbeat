@@ -718,7 +718,12 @@
     var secs = (to - from) * spb + tail;
     var OC = root.OfflineAudioContext || root.webkitOfflineAudioContext;
     var off = new OC(2, Math.ceil(secs * sr), sr);
+    if (opts.solo || opts.fxOnly) {  // a stem: only one track (or only the transition effects) is heard
+      doc = JSON.parse(JSON.stringify(doc));
+      doc.tracks.forEach(function (t) { t.solo = false; t.mute = opts.fxOnly ? true : t.id !== opts.solo; });
+    }
     var g = makeGraph(off, doc, off.destination);
+    if (opts.solo) g.fxBus.gain.value = 0;
     var timeOf = function (b) { return 0.05 + (b - from) * spb; };
     for (var b = from; b < to; b += 4) scheduleRange(g, doc, b, Math.min(b + 4, to), timeOf, { takeBuffer: opts.takeBuffer, first: b === from });
     return off.startRendering();

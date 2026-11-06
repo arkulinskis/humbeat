@@ -37,6 +37,15 @@ class LyricBlock(LyricBlockTemplate):
         self._t = None
         state.set_control_attr(self.text_box, "aria-label", "Words for " + (self.item.get("name") or "this section"))
         self._count()
+        state.set_control_attr(self.melody_button, "aria-label", "Make a melody from the words of " + (self.item.get("name") or "this section"))
+
+    @handle("melody_button", "click")
+    def melody_button_click(self, **event_args):
+        if self._t is not None:
+            window.clearTimeout(self._t)
+            self._t = None
+        self.parent.raise_event("x-lyrics", id=self.item["id"], text=self.text_box.text or "")
+        self.parent.raise_event("x-melody", id=self.item["id"])
 
     def _count(self):
         c = line_counts(self.text_box.text)

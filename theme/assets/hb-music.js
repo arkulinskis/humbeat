@@ -898,5 +898,98 @@
     }
   };
 
+  // ------------------------------------------------------------------ lyrics -> a sung melody (a guide to sing along)
+  var WEAK = { a: 1, an: 1, the: 1, to: 1, of: 1, in: 1, on: 1, at: 1, and: 1, or: 1, but: 1, for: 1, i: 1, my: 1, me: 1, you: 1, your: 1,
+    it: 1, its: 1, is: 1, am: 1, are: 1, was: 1, be: 1, we: 1, our: 1, us: 1, he: 1, she: 1, they: 1, them: 1, his: 1, her: 1, as: 1,
+    with: 1, from: 1, by: 1, so: 1, if: 1, that: 1, this: 1, do: 1, im: 1, ill: 1, ive: 1 };
+  // "together" -> [{s:'to', st:0}, {s:'ge', st:1}, {s:'ther', st:0}]: vowel groups, a stress guess
+  function syllables(word) {
+    var clean = word.toLowerCase().replace(/[^a-z']/g, ''), bare = clean.replace(/'/g, '');
+    if (!bare) return [];
+    var parts = [], DG = { th: '1', sh: '2', ch: '3', ph: '4', wh: '5', ck: '6', ng: '7', gh: '8', qu: '9' }, UNDG = {};
+    Object.keys(DG).forEach(function (k) { UNDG[DG[k]] = k; });
+    var coded = clean.replace(/th|sh|ch|ph|wh|ck|ng|gh|qu/g, function (m) { return DG[m]; });  // letter pairs that are one sound stay together
+    // vowel pairs that are two syllables split first (pla-ying, ra-di-o, li-on)
+    coded.replace(/([aeiou])(y[aeiou])/g, '$1|$2').replace(/([^ts]i)([aou])/g, '$1|$2').replace(/(e)(o)/g, '$1|$2').split('|').forEach(function (chunk) {
+      (chunk.match(/[^aeiouy]*[aeiouy]+(?:[^aeiouy]*$|[^aeiouy](?=[^aeiouy]))?/g) || [chunk]).forEach(function (x) { parts.push(x); });
+    });
+    parts = parts.filter(Boolean).map(function (x) { return x.replace(/[1-9]/g, function (c) { return UNDG[c]; }); });
+    for (var q = parts.length - 1; q > 0; q--) if (!/[aeiouy]/.test(parts[q])) { parts[q - 1] += parts[q]; parts.splice(q, 1); }
+    if (parts.length > 1 && /^[^aeiouy]*e$/.test(parts[parts.length - 1]) && !/le$/.test(clean)) { parts[parts.length - 2] += parts.pop(); }
+    var out = parts.map(function (p) { return { s: p, st: 0 }; });
+    if (out.length === 1) out[0].st = WEAK[bare] ? 0 : 1;
+    else {
+      var st = /^(be|re|de|a[bcdfglmnprstv]|un|to|for|com|con|ex)/.test(bare) ? 1 : 0;  // re-PEAT, a-BOUT, be-CAUSE
+      if (/(tion|sion|ic|ity)$/.test(bare)) st = Math.max(0, out.length - 2);
+      out[st].st = 1;
+    }
+    return out;
+  }
+  HB.syllables = syllables;
+
+  // a melody for one section's words -> {kind:'notes', len, notes:[{t, d, p, v, w}]}, null if there are no words
+  HB.melodyFromLyrics = function (doc, sectionId, opts) {
+    opts = opts || {};
+    var sec = doc.sections.filter(function (s) { return s.id === sectionId; })[0];
+    var text = sec ? String((doc.lyrics || {})[sectionId] || '') : '';
+    var lines = text.split('\n').map(function (l) { return l.replace(/\([^)]*\)/g, ' ').trim(); }).filter(Boolean);  // (ad-libs) aren't sung
+    if (!sec || !lines.length) return null;
+    var rand = rng((opts.seed || 1) * 7919 + text.length);
+    var bars = Math.min(16, sec.bars), totalBeats = bars * 4;
+    var linesUsed = lines.slice(0, Math.max(1, bars));
+    var perLine = Math.max(4, Math.floor(bars / linesUsed.length) * 4);
+    var prog = HB.Doc.progression(doc, sec.kind), key = doc.key || 0, scale = doc.scale === 'chromatic' ? 'major' : (doc.scale || 'major');
+    var steps = T.steps(scale);
+    var high = sec.kind === 'chorus' || sec.kind === 'drop' ? 2 : sec.kind === 'bridge' ? 1 : 0;   // choruses sit higher
+    var base = opts.low ? 57 : 62;                                                                // the middle of the voice
+    function degreeOf(m) { var rel = ((m - key) % 12 + 12) % 12, best = 0, bd = 99; steps.forEach(function (s, i) { var d = Math.abs(s - rel); if (d < bd) { bd = d; best = i; } }); return best; }
+    function stepFrom(m, n) { var oct = Math.floor((m - key) / 12), d = degreeOf(m) + n; oct += Math.floor(d / steps.length); d = ((d % steps.length) + steps.length) % steps.length; return key + oct * 12 + steps[d]; }
+    function chordTones(beat) {
+      var c = prog.deg[Math.floor(beat / 4) % prog.deg.length] || 1;
+      var tones = [0, 2, 4].map(function (k) { return T.degreeNote(key, scale, c + k, 4); }), out = [];
+      for (var o = -12; o <= 12; o += 12) tones.forEach(function (t) { out.push(t + o); });
+      return out;
+    }
+    function nearestTone(beat, target) { var best = null, bd = 99; chordTones(beat).forEach(function (t) { var d = Math.abs(t - target); if (d < bd) { bd = d; best = t; } }); return best; }
+    var notes = [], prevEnd = null, UNDG_SAFE = function (w) { return w; };
+    linesUsed.forEach(function (line, li) {
+      var syl = []; line.split(/\s+/).forEach(function (w) { syllables(w).forEach(function (x) { syl.push(x); }); });
+      if (!syl.length) return;
+      var start = li * perLine, room = perLine - 1;                          // a beat to breathe before the next line
+      var pickup = !syl[0].st && syl.length > 2 ? 0.5 : 0;                   // "and the NIGHT": unstressed words lead in
+      var grid = (syl.length + 2) <= room * 0.7 ? 1 : (syl.length + 2) * 0.5 <= room ? 0.5 : 0.25;  // fill about 3/4 of the line
+      var t = li === 0 ? start + pickup : start - pickup;     // later lines lead in during the breath before them
+      var durs = syl.map(function (x, i) { return i === syl.length - 1 ? 0 : (x.st && grid <= 0.5 ? grid * 2 : grid); });
+      var used = durs.reduce(function (a, b) { return a + b; }, 0);
+      while (used > room - grid && durs.some(function (d) { return d > grid; })) {      // too long: shorten the long ones
+        var j = durs.indexOf(Math.max.apply(null, durs)); durs[j] -= grid; used -= grid;
+      }
+      // put stressed syllables on beats where the line has time to spare
+      var times = [], cur = t;
+      syl.forEach(function (x, i) {
+        if (x.st && i > 0 && cur % 1 !== 0 && cur + (1 - cur % 1) + (durs.slice(i).reduce(function (a, b) { return a + b; }, 0)) <= start + room) cur += 1 - cur % 1;
+        times.push(cur); cur += durs[i];
+      });
+      var lastLen = Math.max(grid, Math.min(3, start + room - times[times.length - 1]));
+      durs[syl.length - 1] = lastLen;
+      // contour: odd lines arch (rise, then come down), even lines answer from above and settle; stresses land on chord tones
+      var top = base + high * 2 + 3 + Math.floor(rand() * 3), low = base - 2 + high, last = syl.length - 1;
+      var p = prevEnd;
+      syl.forEach(function (x, i) {
+        var pos = last ? i / last : 1;
+        var c = li % 2 === 0 ? low + (top - low) * Math.sin(Math.PI * Math.min(1, pos * 1.15)) : top - (top - low) * Math.pow(pos, 0.8);
+        if (i === last) c = li % 2 === 0 ? base + high : low;              // statements come home low, questions stay up
+        var target = (x.st || i === last) ? nearestTone(times[i], c) : T.snap(c + (rand() - 0.5) * 2, key, scale);
+        if (p !== null && Math.abs(target - p) > 7) target = target > p ? stepFrom(p, 3) : stepFrom(p, -3);   // no wild leaps
+        if (!x.st && i < last && p !== null && rand() < 0.15) target = p;   // a repeated note sounds like speech
+        p = Math.max(base - 7, Math.min(base + 12, target));
+        notes.push({ t: Math.round(times[i] * 1000) / 1000, d: Math.max(0.2, durs[i] * 0.94), p: p, v: x.st ? 0.85 : 0.65, w: UNDG_SAFE(x.s) });
+      });
+      prevEnd = p;
+    });
+    notes = notes.filter(function (n) { return n.t >= 0 && n.t < totalBeats; });
+    return { kind: 'notes', len: totalBeats, notes: notes, name: sec.name + ' melody', lines: linesUsed.length };
+  };
+
   if (typeof module !== 'undefined' && module.exports) module.exports = HB;
 })(typeof window !== 'undefined' ? window : globalThis);

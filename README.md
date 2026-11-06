@@ -7,7 +7,7 @@ ribbon like a word processor's (File, Home, Insert, Record, Voice, Instrument, E
 [Anvil](https://anvil.works) as native Anvil Forms; every sound is synthesised in the browser (no samples).
 
 - **App repo:** github.com/arkulinskis/humbeat (branch `master`). Anvil pulls `master`.
-- **Live:** not published yet (planned https://humbeat.anvil.app)
+- **Live:** https://humbeat.anvil.app
 
 ## What it does
 
@@ -36,7 +36,12 @@ parts play in which section, starter lyrics, song-starter ideas, and a plain-wor
   **Mix** (auto-mix, track volume / pan, master, unmute / clear solo, export).
 - Keyboard: Space, R, Ctrl+Z / Shift+Z / Y, Ctrl+C / X / V / D, Delete, + / -, Home.
 - Lyrics pane: words per section with a syllable count per line; the prompter shows the current line while you record.
-- Export: WAV (offline render of the whole mix) and MIDI (every instrument part, General MIDI drums).
+- **Melody from words** (Lyrics tab, or Melody on a lyrics block): each line is split into syllables with a stress guess,
+  fitted to the section's bars (stresses on beats, a long last note, a breath between lines) and given a tune from the
+  chords under it (odd lines arch, even lines answer). It lands on a "Melody guide" track; each note shows its syllable
+  in the piano roll; "Another idea" re-rolls it.
+- Export: WAV (offline render of the whole mix), MIDI (every instrument part, General MIDI drums) and **stems**: one WAV per
+  track, the transition effects and the full mix, in one ZIP (File or Mix tab).
 
 **Voice (`theme/assets/hb-voice.js`)**: raw-sample recorder (aligned to the beat, stored as 32 kHz WAV), YIN pitch
 tracking, TD-PSOLA pitch shifting: auto-tune with retune speed (0 = the hard trap snap), robot monotone, pitch,

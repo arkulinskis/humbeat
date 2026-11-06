@@ -37,6 +37,25 @@ const empty = HB.Doc.fromRecipe('house', { empty: true });
 check(empty.sections.length === 2 && empty.tracks.length === 2 && empty.clips.length > 0, 'empty song: drums + a voice track');
 HB.Doc.starterPart(d1, d1.tracks[1]);
 check(d1.clips.some(c => c.track === d1.tracks[1].id), 'starter part fills a track');
+// lyrics -> melody: one note per sung syllable, in the key, lines in order, inside the section
+const ms = HB.Doc.fromRecipe('storypop', { seed: 3 });
+let melOk = 0;
+ms.sections.filter((s) => ms.lyrics[s.id]).forEach((s) => {
+  const text = ms.lyrics[s.id].split('\n').map((l) => l.replace(/\([^)]*\)/g, ' ').trim()).filter(Boolean);
+  const syl = text.slice(0, s.bars).reduce((a, l) => a + l.split(/\s+/).reduce((b, w) => b + HB.syllables(w).length, 0), 0);
+  const m = HB.melodyFromLyrics(ms, s.id, { seed: 2 });
+  const inKey = m.notes.every((n) => HB.theory.inScale(n.p, ms.key, ms.scale));
+  const ordered = m.notes.every((n, i) => i === 0 || n.t > m.notes[i - 1].t && n.t >= m.notes[i - 1].t + m.notes[i - 1].d * 0.9);
+  const inside = m.notes.every((n) => n.t >= 0 && n.t + n.d <= m.len + 0.01 && n.p >= 50 && n.p <= 80);
+  if (m.notes.length === syl && inKey && ordered && inside && m.notes.every((n) => n.w)) melOk++;
+  else console.log('     melody problem in ' + s.name + ': ' + m.notes.length + '/' + syl + ' notes, inKey ' + inKey + ', ordered ' + ordered + ', inside ' + inside);
+});
+check(melOk >= 3, 'lyrics -> melody: one syllable per note, in the key, no overlaps (' + melOk + ' sections)');
+check(HB.syllables('together').length === 3 && HB.syllables('seat').length === 1 && HB.syllables('playing').length === 2 && HB.syllables('repeat')[1].st === 1, 'syllables: to-GE-ther, seat, pla-ying, re-PEAT');
+const m1 = HB.melodyFromLyrics(ms, ms.sections.find((s) => ms.lyrics[s.id]).id, { seed: 1 }), m2 = HB.melodyFromLyrics(ms, ms.sections.find((s) => ms.lyrics[s.id]).id, { seed: 4 });
+check(m1.notes.map((n) => n.p).join() !== m2.notes.map((n) => n.p).join(), 'another seed, another melody');
+check(HB.melodyFromLyrics(ms, 'nope') === null, 'no section, no melody');
+
 (async () => {
   const mid = Buffer.from(await HB.audio.midi(d1).arrayBuffer());
   check(mid.slice(0, 4).toString() === 'MThd' && mid.readUInt16BE(10) === d1.tracks.filter(t => t.kind !== 'voice').length + 1, 'MIDI file: ' + mid.length + ' bytes, ' + mid.readUInt16BE(10) + ' tracks');

@@ -50,6 +50,37 @@
   }
   HB.decodeWav = decodeWav;
 
+  var CRC = null;
+  function crc32(u8) {
+    if (!CRC) { CRC = new Uint32Array(256); for (var n = 0; n < 256; n++) { var c = n; for (var k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; CRC[n] = c >>> 0; } }
+    var x = 0xffffffff; for (var i = 0; i < u8.length; i++) x = CRC[(x ^ u8[i]) & 255] ^ (x >>> 8);
+    return (x ^ 0xffffffff) >>> 0;
+  }
+  // files [{name, blob}] -> Promise(Blob application/zip); stored entries (WAV barely compresses, and this stays quick)
+  HB.zip = function (files) {
+    return Promise.all(files.map(function (f) { return f.blob.arrayBuffer(); })).then(function (bufs) {
+      var parts = [], central = [], offset = 0, enc = new TextEncoder();
+      bufs.forEach(function (ab, i) {
+        var data = new Uint8Array(ab), name = enc.encode(files[i].name), crc = crc32(data);
+        var lh = new DataView(new ArrayBuffer(30));
+        lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
+        lh.setUint32(14, crc, true); lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true); lh.setUint16(26, name.length, true);
+        parts.push(lh, name, data);
+        var ch = new DataView(new ArrayBuffer(46));
+        ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true);
+        ch.setUint32(16, crc, true); ch.setUint32(20, data.length, true); ch.setUint32(24, data.length, true); ch.setUint16(28, name.length, true);
+        ch.setUint32(42, offset, true);
+        central.push(ch, name);
+        offset += 30 + name.length + data.length;
+      });
+      var size = central.reduce(function (a, p) { return a + p.byteLength; }, 0);
+      var end = new DataView(new ArrayBuffer(22));
+      end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true);
+      end.setUint32(12, size, true); end.setUint32(16, offset, true);
+      return new Blob(parts.concat(central, [end]), { type: 'application/zip' });
+    });
+  };
+
   function download(blob, name) {
     var a = document.createElement('a'), url = URL.createObjectURL(blob);
     a.href = url; a.download = name; document.body.appendChild(a); a.click();
@@ -148,7 +179,7 @@
       sig: d.tracks.map(function (t) { return [t.id, t.name, t.inst, t.color, t.mute, t.solo, t.id === st.sel.track, t.kind === 'voice' ? t.voice.preset : ''].join(':'); }).join('|') + '#' + anySolo,
       track: tr ? { id: tr.id, name: tr.name, kind: tr.kind, inst: tr.inst, oct: tr.oct || 0, fx: tr.fx, voice: tr.voice || null, color: tr.color, vol: tr.vol, pan: tr.pan || 0 } : null,
       clip: cl ? { id: cl.id, start: cl.start, len: cl.len, kind: cl.take ? 'voice' : (d.patterns[cl.pat] || {}).kind, linked: linked,
-        name: cl.take ? 'Recording' : ((d.patterns[cl.pat] || {}).name || 'Part'), bars: cl.len / 4, gain: cl.gain === undefined ? 1 : cl.gain } : null,
+        name: cl.take ? 'Recording' : ((d.patterns[cl.pat] || {}).name || 'Part'), bars: cl.len / 4, patLen: (d.patterns[cl.pat] || {}).len || 0, gain: cl.gain === undefined ? 1 : cl.gain } : null,
       section: { id: section.id, name: section.name, kind: section.kind, bars: section.bars, trans: section.trans || 'none',
         index: d.sections.indexOf(section), prog: HB.Doc.progression(d, section.kind) },
       sections: d.sections.map(function (s) { return { id: s.id, name: s.name, kind: s.kind, bars: s.bars, trans: s.trans || 'none', words: (d.lyrics[s.id] || '').length }; }),
@@ -617,6 +648,51 @@
       return true;
     }, function (e) { st.setStatus('The export did not work: ' + e, 'error'); return false; });
   };
+  // a guide melody for one section's words, on a "Melody guide" track (one clip per section; a new seed = another idea)
+  S.melody = function (sid, seed, inst) {
+    var st = this, d = st.doc, sec = d.sections.filter(function (s) { return s.id === sid; })[0];
+    var tr = d.tracks.filter(function (t) { return t.role === 'guide'; })[0];
+    var p = HB.melodyFromLyrics(d, sid, { seed: seed || 1 });
+    if (!p || !p.notes.length) return { ok: false, error: sec ? 'Write some words for ' + sec.name + ' first (in the Lyrics pane).' : 'Pick a section.' };
+    st.mutate(function () {
+      if (!tr) { tr = st.addTrack('notes', inst || 'flute', true, 'Melody guide'); tr.role = 'guide'; tr.vol = 0.6; tr.fx.space = 0.3; }
+      else if (inst) tr.inst = inst;
+      var start = HB.Doc.sectionStart(d, sid), end = start + sec.bars * 4;
+      d.clips = d.clips.filter(function (c) { return !(c.track === tr.id && c.start >= start && c.start < end); });
+      var pid = HB.uid('p'); d.patterns[pid] = { kind: 'notes', len: p.len, notes: p.notes, name: p.name };
+      var c = { id: HB.uid('c'), track: tr.id, start: start, len: Math.min(sec.bars * 4, p.len), pat: pid };
+      d.clips.push(c); st.gcPatterns(); st.sel.track = tr.id; st.sel.clip = c.id; st.sel.section = sid;
+    });
+    return { ok: true, notes: p.notes.length, lines: p.lines, section: sec.name, first: p.notes.slice(0, 6).map(function (n) { return n.w + ' ' + T.name(n.p); }).join(', ') };
+  };
+
+  // stems: every track alone, the transition effects, and the full mix, as WAVs in one ZIP
+  S.renderStems = function (opts) {
+    var st = this, d = st.doc, o = opts || {}, jobs = [{ name: '00 Full mix', opts: {} }], i = 0;
+    st.prepareVoices();
+    d.tracks.forEach(function (t, k) { jobs.push({ name: (k + 1 < 10 ? '0' : '') + (k + 1) + ' ' + t.name, opts: { solo: t.id } }); });
+    if (HB.audio._internals.transitionAt(d).length) jobs.push({ name: (jobs.length < 10 ? '0' : '') + jobs.length + ' Transitions and effects', opts: { fxOnly: true } });
+    var out = [];
+    function next() {
+      if (i >= jobs.length) return Promise.resolve(out);
+      var j = jobs[i++];
+      st.setStatus('Rendering stem ' + i + ' of ' + jobs.length + ': ' + j.name.slice(3) + '...');
+      return A.render(d, Object.assign({ takeBuffer: st.takeBuffer.bind(st), from: o.from, to: o.to }, j.opts)).then(function (buf) { out.push({ name: j.name, buffer: buf }); return next(); });
+    }
+    return next();
+  };
+  S.exportStems = function (opts) {
+    var st = this;
+    return st.renderStems(opts).then(function (stems) {
+      var files = stems.map(function (s) { return { name: safeName(st.doc.title) + '/' + s.name.replace(/[\\/:*?"<>|]+/g, '') + '.wav', blob: A.wav(s.buffer) }; });
+      return HB.zip(files).then(function (zip) {
+        if (!(opts && opts.noDownload)) download(zip, safeName(st.doc.title) + '-stems.zip');
+        st.setStatus('Stems ready: ' + stems.length + ' WAV files in one ZIP (' + Math.max(1, Math.round(zip.size / 1048576)) + ' MB). Drop them into any music app.', 'ok');
+        return { files: files.map(function (f) { return f.name; }), size: zip.size, zip: zip, stems: stems };
+      });
+    }, function (e) { st.setStatus('The stems could not be made: ' + e, 'error'); throw e; });
+  };
+
   S.exportMidi = function () { download(A.midi(this.doc), safeName(this.doc.title) + '.mid'); this.setStatus('MIDI file downloading: open it in any music app.', 'ok'); };
 
   // ---- the one command door for Python: st.cmd(name, jsonArgs) -> json
@@ -690,6 +766,8 @@
       case 'lyrics': st.setLyrics(a.id, a.text); break;
       case 'starter': tr = st.selTrack(); if (tr && tr.kind !== 'voice') st.mutate(function () { HB.Doc.starterPart(st.doc, tr, a.style); }); break;
       case 'wav': st.exportWav(); break;
+      case 'stems': st.exportStems(); break;
+      case 'melody': return JSON.stringify(st.melody(a.id, a.seed, a.inst));
       case 'midi': st.exportMidi(); break;
       case 'cleantakes': return JSON.stringify({ removed: st.cleanTakes() });
       case 'previewnote': A.previewNote(a.inst, a.midi || 60, 0.6); break;
@@ -984,6 +1062,7 @@
           var nx = KEYW + n.t * g.ppb, ny = (HI - n.p) * ROW, nw = Math.max(4, n.d * g.ppb - 1);
           c.fillStyle = col; c.globalAlpha = 0.45 + 0.55 * (n.v || 0.8); c.fillRect(nx, ny + 1, nw, ROW - 2); c.globalAlpha = 1;
           c.strokeStyle = i === st.sel.note ? ink : 'rgba(0,0,0,.35)'; c.lineWidth = i === st.sel.note ? 2 : 1; c.strokeRect(nx + 0.5, ny + 1.5, nw - 1, ROW - 3); c.lineWidth = 1;
+          if (n.w) { c.fillStyle = '#111111'; c.font = '600 10px ' + font; c.save(); c.beginPath(); c.rect(nx, ny, Math.max(nw, 40), ROW); c.clip(); c.fillText(n.w, nx + 3, ny + ROW - 3.5); c.restore(); }  // the syllable sung on it
         });
         v.g = g; v.kind = 'notes';
         var keyId = cur.c.id + ':' + cur.p.notes.length;

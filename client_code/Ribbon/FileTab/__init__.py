@@ -43,6 +43,10 @@ class FileTab(FileTabTemplate):
     def wav_button_click(self, **event_args):
         self.page.cmd("wav")
 
+    @handle("stems_button", "click")
+    def stems_button_click(self, **event_args):
+        self.page.cmd("stems")
+
     @handle("midi_button", "click")
     def midi_button_click(self, **event_args):
         self.page.cmd("midi")

@@ -16,10 +16,25 @@ class LyricsTab(LyricsTabTemplate):
         self.ideas_panel.add_event_handler("x-word", self._copy)
         self._genre = None
         self.words_note.text = "Type a word and press Rhymes. Press a rhyme to copy it."
+        self.sound_drop.items = [("Soft flute", "flute"), ("Synth lead", "lead"), ("Piano", "piano"), ("Choir \"aah\"", "choir"), ("Bells", "bell")]
+        self.seeds: dict = {}
+        self._secsig = ""
+        self.melody_note.text = "Turns a section's words into a tune to sing along with (a Melody guide track)."
 
     def sync(self, s):
         rb.toggle(self.pane_button, self.page.side_on, rb.BIG + ["ic-text"])
         rb.toggle(self.prompter_button, s.get("prompter"), rb.BIG + ["ic-mic"])
+        secs = [x for x in s.get("sections") or [] if x.get("words")]
+        sig = "|".join(x["id"] + x["name"] for x in secs)
+        if sig != self._secsig:
+            self._secsig = sig
+            cur = self.sec_drop.selected_value
+            self.sec_drop.items = [(x["name"], x["id"]) for x in secs] or [("No words yet", "")]
+            ids = [x["id"] for x in secs]
+            self.sec_drop.selected_value = cur if cur in ids else (ids[0] if ids else "")
+        has = bool(secs) and bool(s.get("editable"))
+        for c in (self.sec_drop, self.sound_drop, self.melody_button, self.again_button):
+            c.enabled = has
         if s.get("genre") != self._genre:
             self._genre = s.get("genre")
             self.ideas_panel.items = [{"text": t} for t in hb.genre(self._genre).get("starters", [])]
@@ -27,6 +42,8 @@ class LyricsTab(LyricsTabTemplate):
     @handle("", "show")
     def form_show(self, **event_args):
         state.set_control_attr(self.word_box, "aria-label", "Word to rhyme")
+        state.set_control_attr(self.sec_drop, "aria-label", "Section to make a melody for")
+        state.set_control_attr(self.sound_drop, "aria-label", "Sound of the melody guide")
 
     def _find(self, kind):
         w = (self.word_box.text or "").strip().split(" ")[-1]
@@ -60,6 +77,26 @@ class LyricsTab(LyricsTabTemplate):
             state.toast("Copied \"%s\"" % text, "ok")
         except Exception:
             state.toast(text)
+
+    def _melody(self, step):
+        sid = self.sec_drop.selected_value
+        if not sid:
+            return
+        self.seeds[sid] = max(1, self.seeds.get(sid, 0) + step)  # "Another idea" moves to the next seed
+        r = json.loads(self.page.cmd("melody", id=sid, seed=self.seeds[sid], inst=self.sound_drop.selected_value) or "{}")
+        if r.get("ok"):
+            self.melody_note.text = "%s: %s over %s lines, starting %s. Edit the notes in the piano roll; each one shows its syllable." % (
+                r["section"], state.plural(r["notes"], "note"), r["lines"], r["first"])
+        else:
+            self.melody_note.text = r.get("error") or "No melody this time."
+
+    @handle("melody_button", "click")
+    def melody_button_click(self, **event_args):
+        self._melody(0)
+
+    @handle("again_button", "click")
+    def again_button_click(self, **event_args):
+        self._melody(1)
 
     @handle("pane_button", "click")
     def pane_button_click(self, **event_args):

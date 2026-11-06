@@ -74,6 +74,8 @@ class Studio(StudioTemplate):
         self._mounted = False
         self.heads_panel.add_event_handler("x-track", self._track)
         self.lyrics_panel.add_event_handler("x-lyrics", self._lyrics)
+        self.lyrics_panel.add_event_handler("x-melody", self._melody)
+        self.mel_seeds: dict = {}
         self.len_drop.items = LENS
         self.studio_box.visible = False
         self.missing.visible = False
@@ -289,6 +291,14 @@ class Studio(StudioTemplate):
         self.voice_tools.visible = kind == "voice"
         self.unique_button.visible = c.get("linked", 0) > 1
         self.gain_slider.set_quiet(c.get("gain") if c.get("gain") is not None else 1)
+        lens = [v for _, v in LENS]
+        pl = int(c.get("patLen") or 0)
+        if pl and pl not in lens:
+            self.len_drop.items = LENS + [("Part: %s" % state.plural(max(1, pl // 4), "bar"), pl)]
+        else:
+            self.len_drop.items = LENS
+        if pl:
+            self.len_drop.selected_value = pl
         if kind == "voice":
             self.ed_info.text = " · ".join(bits[:2]) + " · the thin line is what you sang, the thick line what you hear"
         if kind == "drums":
@@ -391,6 +401,14 @@ class Studio(StudioTemplate):
 
     def _lyrics(self, id=None, text="", **event_args):
         self.cmd("lyrics", id=id, text=text)
+
+    def _melody(self, id=None, **event_args):
+        self.mel_seeds[id] = self.mel_seeds.get(id, 0) + 1
+        r = json.loads(self.cmd("melody", id=id, seed=self.mel_seeds[id]) or "{}")
+        if r.get("ok"):
+            self.status("A melody for %s: %s over %s lines. Press it again for another idea; edit it in the piano roll." % (r["section"], state.plural(r["notes"], "note"), r["lines"]))
+        else:
+            state.toast(r.get("error") or "No melody this time.", "error")
 
     # clip editor bar
     @handle("semi_down", "click")

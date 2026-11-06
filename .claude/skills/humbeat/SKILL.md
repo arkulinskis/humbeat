@@ -12,7 +12,7 @@ the server. Areas: Landing, Songs (#home), Studio, Styles, Learn (production gui
 
 **Where it lives:**
 - Folder `C:\Users\arkvi\Documents\CLAUDE\humbeat\` = the git clone of **github.com/arkulinskis/humbeat**, branch `master`.
-  "git" layout: the folder *is* the Anvil app. Anvil pulls master; pushing is the deploy. Live: not published yet (planned https://humbeat.anvil.app).
+  "git" layout: the folder *is* the Anvil app. Anvil pulls master; pushing is the deploy. Live: https://humbeat.anvil.app (published 2026-11-06).
 - Made from `C:\Users\arkvi\Documents\CLAUDE\APP_MAKER\template-forms` (native Anvil Forms, Nov 2026). Anvil's own agent
   skills describe the same model: `client-forms`, `data-models`, `server-code`, `client-modules`, `anvil-yaml`
   (github.com/anvil-works/anvil-agent-references; see APP_MAKER/ANVIL_NOTES.md, "Native Anvil Forms").
@@ -127,6 +127,8 @@ tools/                     check.py, assets.py, build_icons.py, make_icons.py, u
   r 32nd roll, t triplet), `HB.GENRES` (the 18 recipes: prog per section kind, parts `[role, name, inst, style, octave]`,
   form `[kind, bars, transition]`, levels = which roles play where), `HB.Doc.fromRecipe(genre, {seed, title, empty, key})`,
   `setProgression`, `starterPart`. Same seed = same song (demo songs are `{from_recipe, seed}` and are built here).
+  `HB.syllables(word)` (vowel groups, digraphs kept, a stress guess) and `HB.melodyFromLyrics(doc, sectionId, {seed})`
+  -> a notes pattern whose notes carry `w` (the syllable; the piano roll draws it).
 - `hb-audio.js`: `HB.INSTRUMENTS` (26: kinds sub / fm / piano / organ / ks / b808 / choir), `HB.KITS` (10), per-track
   chain + buses, `scheduleRange` (patterns loop inside clips; swing moves odd 16ths; transitions generated at section ends),
   `HB.audio.play/stop/position/render/wav/wavMono/midi/previewNote/previewDrum`.
@@ -136,6 +138,9 @@ tools/                     check.py, assets.py, build_icons.py, make_icons.py, u
 - `hb-studio.js`: `HB.Studio` owns the doc, selection, undo (JSON snapshots; `mutate(fn, liveKey)` coalesces slider
   drags), clipboard, takes (`st.takes[id] = {samples, sr}`; processed buffers cached by voice settings), the views
   (`mountArranger/Editor/Prompter/Readout`), hum/beatbox flow (`humStart/humStop/humResult/humPreview/humUse`), export.
+  `st.melody(sectionId, seed, inst)` keeps one "Melody guide" track (role `guide`, one clip per section).
+  `st.renderStems({from, to})` / `st.exportStems()`: `HB.audio.render(doc, {solo: trackId})` per track (fx bus off),
+  `{fxOnly: true}` for transitions, plus the mix, zipped by `HB.zip` (stored, CRC32). flow.js checks the stems add up.
   Python talks through `st.cmd(name, json)` (the big switch) and hears `hooks.change(stateJson)` (60 ms throttle),
   `hooks.save(docJson)` (1.2 s after the last change), `hooks.saveTake(id, blob, sec) -> key`, `hooks.status`.
   Guests' takes go to IndexedDB (`HB.store`). `HB.Player` = a listen-only studio; `HB.previewGenre` plays a chorus.

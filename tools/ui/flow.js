@@ -188,6 +188,30 @@
     await click('.chd .anvil-role-btn-primary button', 'Done');
     await modalGone();
 
+    // ---- lyrics -> melody from the Lyrics tab
+    await tab('Lyrics');
+    const guideBefore = S().tracks.filter((t) => t.role === 'guide').length;
+    await ribbon('Make a melody');
+    await until(() => S().tracks.some((t) => t.role === 'guide'), 'melody guide track');
+    const g1 = ST().patternOf(ST().selClip());
+    ok(guideBefore === 0 && g1.notes.length >= 6 && g1.notes.every((n) => n.w), 'melody: a Melody guide track sings the words (' + g1.notes.slice(0, 6).map((n) => n.w + ' ' + window.HB.theory.name(n.p)).join(', ') + ')');
+    const firstTune = g1.notes.map((n) => n.p).join();
+    await ribbon('Another idea');
+    await until(() => ST().patternOf(ST().selClip()) && ST().patternOf(ST().selClip()).notes.map((n) => n.p).join() !== firstTune, 'another melody');
+    ok(S().tracks.filter((t) => t.role === 'guide').length === 1, 'melody: Another idea replaces it (still one guide track)');
+    ok(/syllable/.test(norm($('.rb-panel .anvil-role-rb-hint'))) || $$('.rb-panel .anvil-role-rb-hint').some((e) => /syllable/.test(norm(e))), 'melody: the ribbon says what it made');
+
+    // ---- stems (8 beats, no download): every track alone + the full mix, in a real ZIP; the stems add up to the mix
+    const st8 = await ST().exportStems({ from: 0, to: 8, noDownload: true });
+    const zb = new Uint8Array(await st8.zip.arrayBuffer());
+    ok(zb[0] === 0x50 && zb[1] === 0x4b && st8.files.length === S().tracks.length + 1 + (window.HB.audio._internals.transitionAt(ST().doc).length ? 1 : 0),
+      'stems: a ZIP with ' + st8.files.length + ' WAVs (' + Math.round(st8.size / 1024) + ' KB): ' + st8.files.slice(0, 3).map((f) => f.split('/')[1]).join(', ') + '...');
+    const mix = st8.stems[0].buffer.getChannelData(0), sum = new Float32Array(mix.length);
+    st8.stems.slice(1).forEach((s) => { const d = s.buffer.getChannelData(0); for (let i = 0; i < sum.length && i < d.length; i++) sum[i] += d[i]; });
+    let e = 0, m = 0; for (let i = 0; i < mix.length; i += 5) { e += Math.abs(mix[i] - sum[i]); m += Math.abs(mix[i]); }
+    ok(m > 0 && e / m < 0.6, 'stems: together they sound like the mix (difference ' + (100 * e / m).toFixed(0) + '%, the limiter and reverb tails make up the rest)');
+    ok(/Stems ready/.test(norm($('.anvil-role-st-status'))), 'stems: the status line says they are ready');
+
     // ---- mix down offline (8 beats), and MIDI
     const buf = await window.HB.audio.render(ST().doc, { from: 0, to: 8, takeBuffer: ST().takeBuffer.bind(ST()) });
     let peak = 0; const ch0 = buf.getChannelData(0); for (let i = 0; i < ch0.length; i += 7) peak = Math.max(peak, Math.abs(ch0[i]));

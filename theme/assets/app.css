@@ -1059,3 +1059,8 @@ input[type=range] { accent-color: var(--c-brand-fill); }
 
 /* the instrument line under a track name: one 14px line whatever Anvil wraps it in */
 .anvil-role-th-inst, .anvil-role-th-inst * { line-height: 14px !important; padding-top: 0 !important; padding-bottom: 0 !important; margin-top: 0 !important; margin-bottom: 0 !important; min-height: 0 !important; }
+
+.ly-head { align-items: center; flex-wrap: wrap; row-gap: 0; }
+.ly-head .anvil-role-ly-sec { flex: 1; }
+.ly-head .anvil-role-ly-syll { order: 3; flex-basis: 100%; }
+.anvil-role-ly-mel > button { min-height: 32px; padding: 4px 8px; }

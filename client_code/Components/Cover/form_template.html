@@ -1,26 +1,25 @@
 ---
 custom_component: true
+help_text: 'A riso-print cover (theme/assets/hb-art.js): paper, two inks, halftone dots, the title set big.'
 properties:
-  - name: genre
-    type: string
-    default_value: hopecore
-    description: The style the cover is drawn for (its motif)
-  - name: seed
-    type: number
-    default_value: 1
-    description: Same seed, same cover
-  - name: title
-    type: string
-    default_value: ""
-    default_binding_prop: true
-  - name: label
-    type: string
-    default_value: ""
-    description: A small label printed on the top left (e.g. 140 BPM)
+- default_value: hopecore
+  description: The style the cover is drawn for (its motif)
+  name: genre
+  type: string
+- default_value: 1
+  description: Same seed, same cover
+  name: seed
+  type: number
+- default_binding_prop: true
+  default_value: ''
+  name: title
+  type: string
+- default_value: ''
+  description: A small label printed on the top left (e.g. 140 BPM)
+  name: label
+  type: string
 toolbox_item:
-  title: Cover
   group: Humbeat
-help_text: |
-  A riso-print cover (theme/assets/hb-art.js): paper, two inks, halftone dots, the title set big.
+  title: Cover
 ---
 <div class="hb-cover-host"><div class="hb-cover" anvil:dom-node="art"></div></div>

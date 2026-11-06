@@ -305,14 +305,26 @@ db_schema:
     server: full
     title: Users
 metadata:
-  description: 'Make any song in your browser: pick a style (hopecore, trap, metal, 80s pop...), record your voice with auto-tune,
-    and hum a melody that turns into any instrument.'
-  logo_img: asset:icon-512.png
-  title: Humbeat
+  description: "Make any song in your browser: pick a style from hopecore to heavy metal, record your voice with auto-tune, and hum a melody that becomes any instrument."
+  logo_img: "asset:icon-512.png"
+  title: "Humbeat: hum a tune, make it a song, in your browser"
 name: Humbeat
 native_deps:
   head_html: |
     <script src="_/theme/legal-kit.js?v=d4c784e827"></script>
+    <!-- seo:start (APP_MAKER/seo: edit seo/apps/humbeat.json and run seo.py, not here) -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="keywords" content="make a song online, hum to midi, humming to notes, online auto-tune, free music maker in browser, beatbox to drums, make a trap beat online, beginner music production, record vocals online, song maker for beginners">
+    <meta name="author" content="Arkvital">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Humbeat">
+    <meta property="og:title" content="Humbeat: hum a tune, make it a song, in your browser">
+    <meta property="og:description" content="Make any song in your browser: pick a style from hopecore to heavy metal, record your voice with auto-tune, and hum a melody that becomes any instrument.">
+    <meta property="og:locale" content="en_CA">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Humbeat: hum a tune, make it a song, in your browser">
+    <meta name="twitter:description" content="Make any song in your browser: pick a style from hopecore to heavy metal, record your voice with auto-tune, and hum a melody that becomes any instrument.">
+    <!-- seo:end -->
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
     <meta name="apple-mobile-web-app-capable" content="yes">

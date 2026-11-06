@@ -1,0 +1,42 @@
+<div class="ui hum">
+  <anvil-component type="Label" name="title_label" prop:role='["dlg-title"]'></anvil-component>
+  <div anvil:name="step_intro">
+    <anvil-component type="Label" name="intro_label" prop:role='["hum-lead"]'></anvil-component>
+    <ul class="hum-tips" anvil:name="hum_tips">
+      <li>Use "da", "la" or "doo" so every note has a clear start.</li>
+      <li>After four clicks of count-in, Humbeat listens until you press Stop.</li>
+      <li>Hum along with the song to stay in its key, or just with the click.</li>
+    </ul>
+    <ul class="hum-tips" anvil:name="bb_tips">
+      <li>"Boom" for the kick, "tss" for the hi-hat, "psh" or "ka" for the snare.</li>
+      <li>Keep a steady beat with the click; one or two bars is plenty, Humbeat repeats it.</li>
+    </ul>
+    <anvil-component type="CheckBox" name="song_box" prop:text="Play the song while I record" prop:checked="true"></anvil-component>
+    <div class="ui-row end">
+      <anvil-component type="Button" name="cancel_button" prop:text="Cancel" prop:role='["btn", "btn-ghost"]'></anvil-component>
+      <anvil-component type="Button" name="start_button" prop:text="Start listening" prop:role='["btn", "btn-primary", "ic-mic"]'></anvil-component>
+    </div>
+  </div>
+  <div anvil:name="step_rec" class="hum-rec">
+    <div class="hum-dot" aria-hidden="true"></div>
+    <anvil-component type="Label" name="rec_label" prop:role='["hum-big"]'></anvil-component>
+    <anvil-component type="Button" name="stop_button" prop:text="Stop" prop:role='["btn", "btn-primary", "btn-lg", "ic-stop"]'></anvil-component>
+    <anvil-component type="Timer" name="tick" prop:interval="0"></anvil-component>
+  </div>
+  <div anvil:name="step_done">
+    <anvil-component type="Label" name="result_label" prop:role='["hum-lead"]'></anvil-component>
+    <canvas class="hum-cv" anvil:dom-node="cv" role="img" aria-label="What Humbeat heard, as notes on a grid"></canvas>
+    <div class="hum-opts">
+      <label class="ui-field"><span anvil:dom-node="inst_cap">Play it on</span><anvil-component type="DropDown" name="inst_drop"></anvil-component></label>
+      <label class="ui-field"><span>Snap timing to</span><anvil-component type="DropDown" name="grid_drop"></anvil-component></label>
+      <anvil-component type="CheckBox" name="snap_box" prop:text="Keep the notes in the song's key" prop:checked="true"></anvil-component>
+    </div>
+    <anvil-component type="Label" name="error_label" prop:role='["msg-error"]' prop:visible="false"></anvil-component>
+    <div class="ui-row end hum-actions">
+      <anvil-component type="Button" name="again_button" prop:text="Try again" prop:role='["btn", "btn-ghost", "ic-refresh"]'></anvil-component>
+      <anvil-component type="Button" name="listen_button" prop:text="Listen" prop:role='["btn", "ic-play"]'></anvil-component>
+      <anvil-component type="Button" name="replace_button" prop:text="Replace the selected track's part" prop:role='["btn"]'></anvil-component>
+      <anvil-component type="Button" name="use_button" prop:text="Add it as a new track" prop:role='["btn", "btn-primary", "ic-plus"]'></anvil-component>
+    </div>
+  </div>
+</div>

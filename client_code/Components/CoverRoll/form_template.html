@@ -1,0 +1,21 @@
+---
+custom_component: true
+toolbox_item:
+  title: Cover roll
+  group: Humbeat
+help_text: |
+  The landing hero: a stack of style covers that rolls by; Play plays the chorus of the one in front.
+---
+<div class="rl-host">
+  <div class="rl" anvil:dom-node="stack"></div>
+  <div class="rl-bar">
+    <anvil-component type="Button" name="prev_button" prop:text="Previous style" prop:role='["btn", "btn-icon", "ic-back"]'></anvil-component>
+    <anvil-component type="Button" name="play_button" prop:text="Play this style" prop:role='["btn", "btn-primary", "ic-play", "rl-play"]'></anvil-component>
+    <anvil-component type="Button" name="next_button" prop:text="Next style" prop:role='["btn", "btn-icon", "ic-arrow"]'></anvil-component>
+  </div>
+  <div class="rl-caption">
+    <anvil-component type="Label" name="name_label" prop:role='["rl-name"]'></anvil-component>
+    <anvil-component type="Label" name="blurb_label" prop:role='["rl-blurb"]'></anvil-component>
+    <a class="rl-start" anvil:name="start_link" href="#studio">Start a song in this style <i class="ic ic-arrow"></i></a>
+  </div>
+</div>

@@ -1,0 +1,47 @@
+---
+custom_component: true
+properties:
+  - name: label
+    type: string
+    default_value: ""
+  - name: value
+    type: number
+    default_value: 0
+    default_binding_prop: true
+  - name: min_value
+    type: number
+    default_value: 0
+  - name: max_value
+    type: number
+    default_value: 1
+  - name: step
+    type: number
+    default_value: 0.01
+  - name: enabled
+    type: boolean
+    default_value: true
+  - name: fmt
+    type: string
+    default_value: pct
+    description: How the value reads - pct (40%), signed (+3), ms (20 ms), plain (1.2), db (-3 dB) or names "Snap|Natural"
+events:
+  - name: change
+    default_event: true
+    parameters:
+      - name: value
+      - name: final
+toolbox_item:
+  title: Slider
+  group: Humbeat
+help_text: |
+  A labelled range slider with its value on the right. change(value, final): final = let go.
+---
+<div class="sl-host">
+  <label class="sl">
+    <span class="sl-top">
+      <anvil-component type="Label" name="label_label" prop:role='["sl-label"]'></anvil-component>
+      <anvil-component type="Label" name="value_label" prop:role='["sl-value"]'></anvil-component>
+    </span>
+    <input type="range" class="sl-input" anvil:dom-node="input">
+  </label>
+</div>

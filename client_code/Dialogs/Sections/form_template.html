@@ -1,0 +1,13 @@
+<div class="ui secd">
+  <h2 class="dlg-h">Song structure</h2>
+  <p class="muted">The parts of your song in order. A section's length and the transition into the next one shape how the song moves.</p>
+  <div class="sr-head" aria-hidden="true"><span>Name</span><span>Kind</span><span>Length</span><span>Into the next</span><span></span></div>
+  <anvil-component type="RepeatingPanel" name="rows_panel" prop:item_template="Humbeat.Items.SectionRow" prop:role='["sr-list"]'></anvil-component>
+  <div class="ui-row secd-add">
+    <anvil-component type="DropDown" name="kind_drop"></anvil-component>
+    <anvil-component type="Button" name="add_button" prop:text="Add at the end" prop:role='["btn", "ic-plus"]'></anvil-component>
+    <span class="ui-spacer"></span>
+    <anvil-component type="Label" name="len_label" prop:role='["fine-print"]'></anvil-component>
+    <anvil-component type="Button" name="done_button" prop:text="Done" prop:role='["btn", "btn-primary"]'></anvil-component>
+  </div>
+</div>

@@ -1,0 +1,124 @@
+<anvil-form layout="Humbeat.Layouts.Shell">
+  <anvil-block slot="content">
+    <div class="page-landing hb-landing">
+      <section class="lp-hero hb-hero">
+        <div class="ui-wrap hb-hero-in">
+          <div class="hb-hero-copy">
+            <h1>Hum it. <span class="hb-mark">Humbeat</span> makes it a song.</h1>
+            <p class="lp-lead">Pick a style, from millennial hopecore to heavy metal. Sing into your microphone with auto-tune, and hum a tune that turns into piano, strings, 808 or guitar. In your browser, with a ribbon as plain as a word processor's.</p>
+            <div class="lp-cta" anvil:name="guest_cta">
+              <a class="ui-btn primary lg" href="#studio">Open the studio <i class="ic ic-arrow"></i></a>
+              <a class="ui-btn lg" href="#auth/signup">Create a free account</a>
+            </div>
+            <div class="lp-cta" anvil:name="member_cta">
+              <a class="ui-btn primary lg" href="#home">Open your songs <i class="ic ic-arrow"></i></a>
+              <a class="ui-btn lg" href="#studio">Back to the studio</a>
+            </div>
+            <p class="hb-hero-note">No account needed to try it. Your voice is tuned on your own device.</p>
+          </div>
+          <div class="hb-hero-art">
+            <anvil-component type="Humbeat.Components.CoverRoll" name="roll"></anvil-component>
+          </div>
+        </div>
+      </section>
+
+      <section class="lp-section hb-how" id="how">
+        <div class="ui-wrap">
+          <h2 class="hb-h2">From a hum to a finished song</h2>
+          <ol class="hb-steps">
+            <li>
+              <h3>Pick a style</h3>
+              <p>Eighteen styles start you with a real arrangement: drums, bass, chords and a hook, in the right tempo and key, with intro, verses, choruses and the transitions between them.</p>
+            </li>
+            <li>
+              <h3>Sing, hum or beatbox</h3>
+              <p>Record your voice over the song with a count-in and the words scrolling by. Hum a melody and it becomes notes. Beatbox and it becomes a drum part.</p>
+            </li>
+            <li>
+              <h3>Shape it in the ribbon</h3>
+              <p>Home, Insert, Record, Voice, Instrument, Effects, Song, Lyrics, Mix: tabs you already know how to use. Then mix it down to a WAV or a MIDI file.</p>
+            </li>
+          </ol>
+          <figure class="hb-diagram" aria-label="A hummed line turns into notes, and the notes into any instrument">
+            <svg viewBox="0 0 900 200" role="img" aria-hidden="true">
+              <path class="hd-wave" d="M20 120 C60 40 90 40 120 110 S180 170 210 90 S280 30 310 100 S360 150 380 120"/>
+              <path class="hd-arrow" d="M410 110 h60 m-14 -12 l14 12 l-14 12"/>
+              <rect class="hd-note" x="500" y="96" width="44" height="18"/><rect class="hd-note" x="552" y="76" width="44" height="18"/>
+              <rect class="hd-note" x="604" y="56" width="70" height="18"/><rect class="hd-note" x="682" y="86" width="44" height="18"/>
+              <path class="hd-arrow" d="M740 80 h40 m-14 -12 l14 12 l-14 12"/>
+              <g class="hd-tags"><rect x="800" y="30" width="86" height="28"/><rect x="800" y="66" width="86" height="28"/><rect x="800" y="102" width="86" height="28"/><rect x="800" y="138" width="86" height="28"/></g>
+              <g class="hd-txt"><text x="843" y="49">Piano</text><text x="843" y="85">Strings</text><text x="843" y="121">808</text><text x="843" y="157">Guitar</text></g>
+            </svg>
+            <figcaption>What you hum becomes notes in the song's key, and the notes can be played by any instrument.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="lp-section hb-styles-poster">
+        <div class="ui-wrap">
+          <h2 class="hb-h2">Every style, ready to play</h2>
+          <p class="hb-sub">Each one comes with its own drums, bass line, chords, vocal sound and song shape. <a href="#styles">See what makes each style</a>.</p>
+          <ul class="hb-poster">
+            <li><a href="#styles/hopecore">Millennial Hopecore</a></li>
+            <li><a href="#styles/mumble">Mumble Rap</a></li>
+            <li><a href="#styles/metal">Heavy Metal</a></li>
+            <li><a href="#styles/pop80">80s Dance Pop</a></li>
+            <li><a href="#styles/teenpop">Y2K Teen Pop</a></li>
+            <li><a href="#styles/storypop">Storyteller Pop</a></li>
+            <li><a href="#styles/lofi">Lo-fi Hip Hop</a></li>
+            <li><a href="#styles/house">House</a></li>
+            <li><a href="#styles/synthwave">Synthwave</a></li>
+            <li><a href="#styles/reggaeton">Reggaeton</a></li>
+            <li><a href="#styles/poppunk">Pop Punk</a></li>
+            <li><a href="#styles/drill">Drill</a></li>
+            <li><a href="#styles/afrobeats">Afrobeats</a></li>
+            <li><a href="#styles/ballad">Piano Ballad</a></li>
+            <li><a href="#styles/futurebass">Future Bass</a></li>
+            <li><a href="#styles/hyperpop">Hyperpop</a></li>
+            <li><a href="#styles/disco">Disco Funk</a></li>
+            <li><a href="#styles/boombap">Boom Bap</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="lp-section hb-voice">
+        <div class="ui-wrap hb-voice-in">
+          <div>
+            <h2 class="hb-h2">A voice menu, not a voice generator</h2>
+            <p>You sing; Humbeat makes it sound like the record you hear in your head. Every setting runs on your own device, on your own voice.</p>
+          </div>
+          <dl class="hb-voice-list">
+            <div><dt>Auto-tune</dt><dd>Snaps your pitch to the song's key. Retune speed goes from natural to the instant robotic snap of trap and mumble rap.</dd></div>
+            <div><dt>Harmony and choir</dt><dd>A second voice a third or fifth above you, or a three-voice choir, always in the key.</dd></div>
+            <div><dt>Character</dt><dd>Chipmunk to giant: move the voice's character without changing the note you sang.</dd></div>
+            <div><dt>Double, reverb, echo, grit</dt><dd>Stacked pop vocals, a stadium room, a hopecore haze, a metal scream, an old telephone.</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="lp-section">
+        <div class="ui-wrap">
+          <h2 class="hb-h2">Questions</h2>
+          <div class="lp-faq">
+            <details><summary>Is it free?</summary><p>Yes. Making, recording, exporting and sharing songs is free. There are no ads.</p></details>
+            <details><summary>Do I need to know music?</summary><p>No. A style gives you a finished-sounding song to start from; you change one thing at a time. The <a href="#learn">guide</a> explains tracks, chords, effects and song structure in plain words.</p></details>
+            <details><summary>Can I make something like Michael Jackson, Britney Spears or Taylor Swift?</summary><p>You can make songs in those styles: 80s dance pop, Y2K teen pop, storyteller pop. Humbeat gives you the ingredients (drums, bass, chords, vocal sound, structure); the song, the melody and the voice are yours. Humbeat doesn't copy anyone's recordings or voice.</p></details>
+            <details><summary>Does it make up vocals for me?</summary><p>No, and on purpose: you sing or hum, and the voice menu shapes it. Nothing is generated.</p></details>
+            <details><summary>Where do my recordings go?</summary><p>As a visitor, only into this browser. With an account, into your songs on our server, so you can open them anywhere and share them. You can delete them any time.</p></details>
+            <details><summary>What can I take away?</summary><p>A WAV file of the whole mix, and a MIDI file with every instrument part for any other music app.</p></details>
+            <details><summary>Does it work on a phone?</summary><p>Yes, in any modern browser, though a laptop with headphones is the most comfortable for recording.</p></details>
+          </div>
+        </div>
+      </section>
+
+      <section class="lp-section">
+        <div class="ui-wrap">
+          <div class="lp-band hb-band">
+            <div><h2>Got a tune stuck in your head?</h2><p>Hum it before it's gone.</p></div>
+            <a class="ui-btn lg" href="#studio" anvil:name="band_link">Open the studio</a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </anvil-block>
+</anvil-form>

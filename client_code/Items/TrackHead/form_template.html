@@ -1,0 +1,16 @@
+<div class="th-host">
+  <div class="th" anvil:name="box">
+    <span class="th-chip" anvil:name="chip" aria-hidden="true"></span>
+    <div class="th-text" anvil:name="text_box">
+      <anvil-component type="Button" name="name_button" prop:role='["th-name"]' bind:text="self.item['name']"></anvil-component>
+      <anvil-component type="Label" name="inst_label" prop:role='["th-inst"]' bind:text="self.item['instName']"></anvil-component>
+    </div>
+    <div class="th-ctl">
+      <div class="th-btns">
+        <anvil-component type="Button" name="mute_button" prop:text="M" prop:role='["th-btn"]'></anvil-component>
+        <anvil-component type="Button" name="solo_button" prop:text="S" prop:role='["th-btn"]'></anvil-component>
+      </div>
+      <input type="range" class="th-vol" min="0" max="1.2" step="0.01" anvil:dom-node="vol">
+    </div>
+  </div>
+</div>

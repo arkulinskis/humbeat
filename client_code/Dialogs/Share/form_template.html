@@ -1,0 +1,14 @@
+<div class="ui shd">
+  <h2 class="dlg-h">Share your song</h2>
+  <p class="muted">Anyone with the link can listen (no account needed), recorded vocals included. They can't change your song.</p>
+  <anvil-component type="CheckBox" name="on_box" prop:text="Share with a link"></anvil-component>
+  <div anvil:name="link_box" class="shd-link">
+    <label class="ui-field"><span>Listen link</span><anvil-component type="TextBox" name="link_text"></anvil-component></label>
+    <div class="ui-row">
+      <anvil-component type="Button" name="copy_button" prop:text="Copy link" prop:role='["btn", "btn-primary", "ic-copy"]'></anvil-component>
+      <a class="ui-btn" anvil:name="open_link" href="#listen">Open the listen page</a>
+    </div>
+    <p class="ui-hint">Turning sharing off and on makes a new link; the old one stops working.</p>
+  </div>
+  <div class="ui-row end"><anvil-component type="Button" name="done_button" prop:text="Done" prop:role='["btn", "btn-ghost"]'></anvil-component></div>
+</div>

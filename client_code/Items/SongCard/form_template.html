@@ -1,0 +1,16 @@
+<article class="sc-host">
+  <div class="sc" anvil:name="card">
+    <a class="sc-art" anvil:name="art_link" href="#studio" tabindex="-1" aria-hidden="true">
+      <anvil-component type="Humbeat.Components.Cover" name="cover" bind:genre="self.item['genre']" bind:seed="self.item['cover_seed']" bind:title="self.item['title']"></anvil-component>
+    </a>
+    <div class="sc-body">
+      <a class="sc-title" anvil:name="title_link" href="#studio"><anvil-component type="Label" name="title_label" prop:role='["sc-title-text"]' bind:text="self.item['title']"></anvil-component></a>
+      <anvil-component type="Label" name="meta_label" prop:role='["sc-meta"]'></anvil-component>
+      <div class="sc-actions" anvil:name="actions">
+        <anvil-component type="Button" name="share_button" prop:text="Share" prop:role='["btn", "btn-sm", "btn-ghost", "ic-share"]'></anvil-component>
+        <anvil-component type="Button" name="copy_button" prop:text="Copy" prop:role='["btn", "btn-sm", "btn-ghost", "ic-dup"]'></anvil-component>
+        <anvil-component type="Button" name="delete_button" prop:text="Delete" prop:role='["btn", "btn-sm", "btn-ghost", "btn-danger", "ic-trash"]'></anvil-component>
+      </div>
+    </div>
+  </div>
+</article>

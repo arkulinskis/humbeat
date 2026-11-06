@@ -1,0 +1,32 @@
+<anvil-form layout="Humbeat.Layouts.Shell">
+  <anvil-block slot="content">
+    <div class="ui-wrap hm">
+      <div class="ui-page-head">
+        <div>
+          <anvil-component type="Label" name="title_label" prop:role='["page-title"]' prop:text="Your songs"></anvil-component>
+          <anvil-component type="Label" name="count_label" prop:role='["fine-print"]'></anvil-component>
+        </div>
+        <anvil-component type="Button" name="new_button" prop:text="New song" prop:role='["btn", "btn-primary", "btn-lg", "ic-plus"]'></anvil-component>
+      </div>
+      <div class="hm-import" anvil:name="import_box">
+        <div>
+          <strong>You made a song before signing up.</strong>
+          <anvil-component type="Label" name="import_label" prop:role='["fine-print"]'></anvil-component>
+        </div>
+        <anvil-component type="Button" name="import_button" prop:text="Move it into my songs" prop:role='["btn", "btn-primary", "ic-arrow"]'></anvil-component>
+      </div>
+      <anvil-component type="RepeatingPanel" name="songs_panel" prop:item_template="Humbeat.Items.SongCard" prop:role='["sc-grid"]'></anvil-component>
+      <div class="ui-empty" anvil:name="empty">
+        <i class="ic ic-music"></i>
+        <h2>No songs yet</h2>
+        <p>Start one from a style: it plays straight away, then make it yours.</p>
+        <anvil-component type="Button" name="empty_button" prop:text="Start your first song" prop:role='["btn", "btn-primary", "ic-plus"]'></anvil-component>
+      </div>
+      <section class="hm-spot" anvil:name="spot_box">
+        <h2>Made by others</h2>
+        <p class="muted">Songs people shared, picked for the spotlight. Open one in the studio to see how it's built.</p>
+        <anvil-component type="RepeatingPanel" name="spot_panel" prop:item_template="Humbeat.Items.SongCard" prop:role='["sc-grid", "sc-spot"]'></anvil-component>
+      </section>
+    </div>
+  </anvil-block>
+</anvil-form>

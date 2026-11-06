@@ -1,0 +1,12 @@
+<div class="ad-table ad-song-row">
+  <div class="ad-song-title">
+    <anvil-component type="Label" name="title_label" prop:role='["strong"]' bind:text="self.item['title']"></anvil-component>
+    <anvil-component type="Label" name="meta_label" prop:role='["fine-print"]'></anvil-component>
+  </div>
+  <anvil-component type="Label" name="plays_label" bind:text="str(self.item['plays'])"></anvil-component>
+  <anvil-component type="CheckBox" name="featured_box" prop:text="In spotlight" bind:checked="self.item['featured']"></anvil-component>
+  <div class="ui-row">
+    <a class="ui-btn sm" anvil:name="listen_link" href="#listen">Listen</a>
+    <anvil-component type="Button" name="unshare_button" prop:text="Stop sharing" prop:role='["btn", "btn-sm", "btn-danger"]'></anvil-component>
+  </div>
+</div>

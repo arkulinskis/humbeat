@@ -1,0 +1,30 @@
+<anvil-form layout="Humbeat.Layouts.Shell">
+  <anvil-block slot="content">
+    <div class="ui-wrap ls">
+      <div class="ls-grid" anvil:name="player_box">
+        <div class="ls-cover"><anvil-component type="Humbeat.Components.Cover" name="cover"></anvil-component></div>
+        <div class="ls-text">
+          <anvil-component type="Label" name="title_label" prop:role='["page-title"]'></anvil-component>
+          <anvil-component type="Label" name="by_label" prop:role='["ls-by"]'></anvil-component>
+          <anvil-component type="Label" name="meta_label" prop:role='["fine-print"]'></anvil-component>
+          <div class="ui-row ls-actions">
+            <anvil-component type="Button" name="play_button" prop:text="Play" prop:role='["btn", "btn-primary", "btn-lg", "ic-play"]'></anvil-component>
+            <span class="ls-time" anvil:dom-node="time_node" aria-hidden="true">1.1  0:00</span>
+          </div>
+          <anvil-component type="Label" name="status_label" prop:role='["fine-print"]'></anvil-component>
+          <div class="ls-words st-prompter" anvil:dom-node="prompter_node" aria-live="polite"></div>
+          <div class="ui-row ls-more">
+            <a class="ui-btn" anvil:name="studio_link" href="#studio">See how it's made</a>
+            <a class="ui-btn ghost" href="#landing">Make your own song</a>
+          </div>
+        </div>
+      </div>
+      <div class="ui-empty" anvil:name="missing">
+        <i class="ic ic-music"></i>
+        <h2>This song isn't shared</h2>
+        <anvil-component type="Label" name="missing_label"></anvil-component>
+        <p><a class="ui-btn primary" href="#landing">Make your own song</a></p>
+      </div>
+    </div>
+  </anvil-block>
+</anvil-form>

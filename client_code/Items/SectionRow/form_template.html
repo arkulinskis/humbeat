@@ -1,0 +1,17 @@
+<div class="sr-host">
+  <div class="sr">
+    <anvil-component type="TextBox" name="name_box" prop:role='["sr-name"]' bind:text="self.item['name']"></anvil-component>
+    <anvil-component type="DropDown" name="kind_drop" prop:role='["sr-kind"]'></anvil-component>
+    <div class="sr-bars">
+      <anvil-component type="Button" name="less_button" prop:text="Fewer bars" prop:role='["btn", "btn-icon", "btn-sm", "ic-zoomout"]'></anvil-component>
+      <anvil-component type="Label" name="bars_label" prop:role='["sr-bars-n"]'></anvil-component>
+      <anvil-component type="Button" name="more_button" prop:text="More bars" prop:role='["btn", "btn-icon", "btn-sm", "ic-plus"]'></anvil-component>
+    </div>
+    <anvil-component type="DropDown" name="trans_drop" prop:role='["sr-trans"]'></anvil-component>
+    <div class="sr-move">
+      <anvil-component type="Button" name="up_button" prop:text="Move up" prop:role='["btn", "btn-icon", "btn-sm", "ic-up"]'></anvil-component>
+      <anvil-component type="Button" name="down_button" prop:text="Move down" prop:role='["btn", "btn-icon", "btn-sm", "ic-down"]'></anvil-component>
+      <anvil-component type="Button" name="remove_button" prop:text="Remove section" prop:role='["btn", "btn-icon", "btn-sm", "btn-danger", "ic-trash"]'></anvil-component>
+    </div>
+  </div>
+</div>

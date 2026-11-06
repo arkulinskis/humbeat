@@ -1,0 +1,13 @@
+<div class="ui chd">
+  <h2 class="dlg-h">Chords</h2>
+  <p class="muted">Pick the chords for every section of one kind. Chords, pads, bass and melodies there are rebuilt to follow them; drums and vocals stay.</p>
+  <div class="ui-row chd-top">
+    <label class="ui-field"><span>Sections</span><anvil-component type="DropDown" name="kind_drop"></anvil-component></label>
+    <div class="chd-now">
+      <anvil-component type="Label" name="now_label" prop:role='["chd-now-text"]'></anvil-component>
+      <anvil-component type="Button" name="hear_button" prop:text="Hear these chords" prop:role='["btn", "btn-sm", "ic-play"]'></anvil-component>
+    </div>
+  </div>
+  <anvil-component type="RepeatingPanel" name="prog_panel" prop:item_template="Humbeat.Items.ProgChip" prop:role='["pc-grid"]'></anvil-component>
+  <div class="ui-row end"><anvil-component type="Button" name="done_button" prop:text="Done" prop:role='["btn", "btn-primary"]'></anvil-component></div>
+</div>

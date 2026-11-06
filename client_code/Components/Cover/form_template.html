@@ -1,0 +1,26 @@
+---
+custom_component: true
+properties:
+  - name: genre
+    type: string
+    default_value: hopecore
+    description: The style the cover is drawn for (its motif)
+  - name: seed
+    type: number
+    default_value: 1
+    description: Same seed, same cover
+  - name: title
+    type: string
+    default_value: ""
+    default_binding_prop: true
+  - name: label
+    type: string
+    default_value: ""
+    description: A small label printed on the top left (e.g. 140 BPM)
+toolbox_item:
+  title: Cover
+  group: Humbeat
+help_text: |
+  A riso-print cover (theme/assets/hb-art.js): paper, two inks, halftone dots, the title set big.
+---
+<div class="hb-cover-host"><div class="hb-cover" anvil:dom-node="art"></div></div>

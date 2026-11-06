@@ -1,0 +1,16 @@
+<div class="ui ns">
+  <h2 class="dlg-h">Start a song</h2>
+  <label class="ui-field"><span>Name <em>(you can change it any time)</em></span>
+    <anvil-component type="TextBox" name="title_box" prop:placeholder="My new song"></anvil-component>
+  </label>
+  <div class="ns-head"><span class="ns-step">Pick a style</span><anvil-component type="Label" name="pick_label" prop:role='["ns-pick"]'></anvil-component></div>
+  <anvil-component type="RepeatingPanel" name="styles_panel" prop:item_template="Humbeat.Items.StyleTile" prop:role='["ns-grid"]'></anvil-component>
+  <div class="ns-start" role="group" aria-label="Start with">
+    <anvil-component type="Button" name="full_button" prop:text="A full starter song" prop:role='["seg", "on"]'></anvil-component>
+    <anvil-component type="Button" name="beat_button" prop:text="Just drums and an empty song" prop:role='["seg"]'></anvil-component>
+  </div>
+  <div class="ui-row end">
+    <anvil-component type="Button" name="cancel_button" prop:text="Cancel" prop:role='["btn", "btn-ghost"]'></anvil-component>
+    <anvil-component type="Button" name="create_button" prop:text="Start the song" prop:role='["btn", "btn-primary", "ic-arrow"]'></anvil-component>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+<anvil-form layout="Humbeat.Layouts.Shell">
+  <anvil-block slot="content">
+    <div class="ui-wrap sy">
+      <div class="sy-detail">
+        <div class="sy-cover"><anvil-component type="Humbeat.Components.Cover" name="cover"></anvil-component></div>
+        <div class="sy-text">
+          <anvil-component type="Label" name="name_label" prop:role='["page-title"]'></anvil-component>
+          <anvil-component type="Label" name="facts_label" prop:role='["sy-facts"]'></anvil-component>
+          <anvil-component type="Label" name="blurb_label" prop:role='["sy-blurb"]'></anvil-component>
+          <div class="ui-row sy-actions">
+            <anvil-component type="Button" name="hear_button" prop:text="Hear the chorus" prop:role='["btn", "btn-lg", "ic-play"]'></anvil-component>
+            <a class="ui-btn primary lg" anvil:name="start_link" href="#studio">Start a song in this style <i class="ic ic-arrow"></i></a>
+          </div>
+          <dl class="sy-ing">
+            <div><dt>Drums</dt><dd><anvil-component type="Label" name="drums_label"></anvil-component></dd></div>
+            <div><dt>Bass</dt><dd><anvil-component type="Label" name="bass_label"></anvil-component></dd></div>
+            <div><dt>Chords</dt><dd><anvil-component type="Label" name="harmony_label"></anvil-component></dd></div>
+            <div><dt>Vocals</dt><dd><anvil-component type="Label" name="vocals_label"></anvil-component></dd></div>
+            <div><dt>Shape</dt><dd><anvil-component type="Label" name="structure_label"></anvil-component></dd></div>
+            <div class="sy-tip"><dt>Try this</dt><dd><anvil-component type="Label" name="tip_label"></anvil-component></dd></div>
+          </dl>
+        </div>
+      </div>
+      <h2 class="sy-all">All styles</h2>
+      <anvil-component type="RepeatingPanel" name="styles_panel" prop:item_template="Humbeat.Items.StyleCard" prop:role='["sty-grid"]'></anvil-component>
+    </div>
+  </anvil-block>
+</anvil-form>

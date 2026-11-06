@@ -1,0 +1,97 @@
+<anvil-form layout="Humbeat.Layouts.Shell">
+  <anvil-block slot="content">
+    <div class="st-host">
+      <div class="st" anvil:name="studio_box">
+        <div class="st-top">
+          <anvil-component type="TextBox" name="title_box" prop:role='["st-title"]' prop:placeholder="Name your song"></anvil-component>
+          <anvil-component type="Label" name="save_label" prop:role='["st-save"]'></anvil-component>
+          <div class="st-readout" aria-hidden="true"><span class="st-time" anvil:dom-node="time_node">1.1  0:00</span><canvas class="st-meter" anvil:dom-node="meter_node"></canvas></div>
+          <anvil-component type="Button" name="play_button" prop:text="Play" prop:role='["btn", "btn-primary", "ic-play", "st-play"]'></anvil-component>
+          <anvil-component type="Button" name="rec_button" prop:text="Record" prop:role='["btn", "ic-rec", "st-rec"]'></anvil-component>
+        </div>
+        <div class="rb">
+          <div class="rb-tabs" role="tablist" aria-label="Ribbon">
+        <button type="button" class="rb-tab rb-file" role="tab" id="rbt-file" aria-controls="rb-panel" data-tab="file" anvil:name="tab_file" anvil:on-dom:click="self.tab_click">File</button>
+        <button type="button" class="rb-tab" role="tab" id="rbt-home" aria-controls="rb-panel" data-tab="home" anvil:name="tab_home" anvil:on-dom:click="self.tab_click">Home</button>
+        <button type="button" class="rb-tab" role="tab" id="rbt-insert" aria-controls="rb-panel" data-tab="insert" anvil:name="tab_insert" anvil:on-dom:click="self.tab_click">Insert</button>
+        <button type="button" class="rb-tab" role="tab" id="rbt-record" aria-controls="rb-panel" data-tab="record" anvil:name="tab_record" anvil:on-dom:click="self.tab_click">Record</button>
+        <button type="button" class="rb-tab" role="tab" id="rbt-voice" aria-controls="rb-panel" data-tab="voice" anvil:name="tab_voice" anvil:on-dom:click="self.tab_click">Voice</button>
+        <button type="button" class="rb-tab" role="tab" id="rbt-instrument" aria-controls="rb-panel" data-tab="instrument" anvil:name="tab_instrument" anvil:on-dom:click="self.tab_click">Instrument</button>
+        <button type="button" class="rb-tab" role="tab" id="rbt-effects" aria-controls="rb-panel" data-tab="effects" anvil:name="tab_effects" anvil:on-dom:click="self.tab_click">Effects</button>
+        <button type="button" class="rb-tab" role="tab" id="rbt-song" aria-controls="rb-panel" data-tab="song" anvil:name="tab_song" anvil:on-dom:click="self.tab_click">Song</button>
+        <button type="button" class="rb-tab" role="tab" id="rbt-lyrics" aria-controls="rb-panel" data-tab="lyrics" anvil:name="tab_lyrics" anvil:on-dom:click="self.tab_click">Lyrics</button>
+        <button type="button" class="rb-tab" role="tab" id="rbt-mix" aria-controls="rb-panel" data-tab="mix" anvil:name="tab_mix" anvil:on-dom:click="self.tab_click">Mix</button>
+          </div>
+          <div class="rb-panel" id="rb-panel" role="tabpanel" anvil:name="panel_box">
+            <anvil-component type="LinearPanel" name="ribbon_host" prop:role='["rb-hostpanel"]'></anvil-component>
+          </div>
+        </div>
+        <div class="st-banner" anvil:name="banner">
+          <anvil-component type="Label" name="banner_label" prop:role='["st-banner-text"]'></anvil-component>
+          <anvil-component type="Button" name="banner_button" prop:role='["btn", "btn-sm", "btn-primary"]'></anvil-component>
+        </div>
+        <anvil-component type="Label" name="status_label" prop:role='["st-status"]'></anvil-component>
+        <div class="st-work" anvil:name="work">
+          <div class="st-main">
+            <div class="st-prompter" anvil:dom-node="prompter_node" aria-live="polite"></div>
+            <div class="st-tracks">
+              <div class="st-heads">
+                <div class="st-heads-top">
+                  <span class="st-heads-title">Tracks</span>
+                  <anvil-component type="Button" name="add_track_button" prop:text="Add a track" prop:role='["btn", "btn-sm", "btn-ghost", "ic-plus"]'></anvil-component>
+                </div>
+                <anvil-component type="RepeatingPanel" name="heads_panel" prop:item_template="Humbeat.Items.TrackHead" prop:role='["th-list"]'></anvil-component>
+              </div>
+              <div class="st-arr" anvil:dom-node="arr_node"></div>
+            </div>
+            <section class="st-ed" aria-label="Clip editor">
+              <div class="st-ed-bar">
+                <div class="st-ed-title">
+                  <anvil-component type="Label" name="ed_name" prop:role='["ed-name"]' prop:text="Clip editor"></anvil-component>
+                  <anvil-component type="Label" name="ed_info" prop:role='["ed-info"]'></anvil-component>
+                </div>
+                <div class="st-ed-tools" anvil:name="ed_tools">
+                  <div class="st-ed-group" anvil:name="notes_tools">
+                    <anvil-component type="Button" name="semi_down" prop:text="Down a semitone" prop:role='["btn", "btn-sm", "btn-icon", "ic-down"]'></anvil-component>
+                    <anvil-component type="Button" name="semi_up" prop:text="Up a semitone" prop:role='["btn", "btn-sm", "btn-icon", "ic-up"]'></anvil-component>
+                    <anvil-component type="Button" name="oct_down" prop:text="-8va" prop:role='["btn", "btn-sm"]' prop:tooltip="Octave down"></anvil-component>
+                    <anvil-component type="Button" name="oct_up" prop:text="+8va" prop:role='["btn", "btn-sm"]' prop:tooltip="Octave up"></anvil-component>
+                    <anvil-component type="Button" name="snap_button" prop:text="Snap to key" prop:role='["btn", "btn-sm", "ic-key"]'></anvil-component>
+                  </div>
+                  <div class="st-ed-group" anvil:name="part_tools">
+                    <anvil-component type="Button" name="quant_button" prop:text="Quantize" prop:role='["btn", "btn-sm", "ic-grid"]'></anvil-component>
+                    <anvil-component type="DropDown" name="len_drop" prop:role='["ed-len"]'></anvil-component>
+                    <anvil-component type="Button" name="unique_button" prop:text="Make unique" prop:role='["btn", "btn-sm", "ic-dup"]'></anvil-component>
+                    <anvil-component type="Button" name="clear_button" prop:text="Clear" prop:role='["btn", "btn-sm", "ic-x"]'></anvil-component>
+                  </div>
+                  <div class="st-ed-group" anvil:name="voice_tools">
+                    <anvil-component type="Humbeat.Components.Slider" name="gain_slider" prop:label="Clip volume" prop:min_value="0" prop:max_value="2"></anvil-component>
+                  </div>
+                  <anvil-component type="Button" name="del_button" prop:text="Delete clip" prop:role='["btn", "btn-sm", "btn-danger", "ic-trash"]'></anvil-component>
+                </div>
+              </div>
+              <div class="st-ed-mount" anvil:dom-node="ed_node"></div>
+              <p class="st-ed-help" anvil:name="ed_help">Click the grid to add a note, drag to move it, drag its right edge to make it longer. Double-click (or right-click) a note to delete it. Space plays and stops.</p>
+            </section>
+          </div>
+          <aside class="st-side" anvil:name="side" aria-labelledby="st-side-h">
+            <div class="st-side-head">
+              <h2 id="st-side-h">Lyrics</h2>
+              <anvil-component type="Button" name="side_close" prop:text="Hide lyrics" prop:role='["btn", "btn-sm", "btn-icon", "btn-ghost", "ic-x"]'></anvil-component>
+            </div>
+            <p class="st-side-tip">A few words per line. While you record, the prompter shows one line at a time across the section.</p>
+            <anvil-component type="RepeatingPanel" name="lyrics_panel" prop:item_template="Humbeat.Items.LyricBlock" prop:role='["ly-list"]'></anvil-component>
+          </aside>
+        </div>
+      </div>
+      <div class="ui-wrap" anvil:name="missing">
+        <div class="ui-empty">
+          <i class="ic ic-music"></i>
+          <h2>This song isn't here</h2>
+          <anvil-component type="Label" name="missing_label"></anvil-component>
+          <p><a class="ui-btn primary" href="#home">Go to your songs</a></p>
+        </div>
+      </div>
+    </div>
+  </anvil-block>
+</anvil-form>

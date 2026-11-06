@@ -1,0 +1,9 @@
+<div class="ly-host">
+  <div class="ly" anvil:name="box">
+    <div class="ly-head">
+      <anvil-component type="Label" name="sec_label" prop:role='["ly-sec"]' bind:text="self.item['name']"></anvil-component>
+      <anvil-component type="Label" name="syll_label" prop:role='["ly-syll"]'></anvil-component>
+    </div>
+    <anvil-component type="TextArea" name="text_box" prop:role='["ly-box"]' prop:placeholder="One line per phrase" bind:text="self.item['text']"></anvil-component>
+  </div>
+</div>

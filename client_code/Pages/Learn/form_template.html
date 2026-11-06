@@ -1,0 +1,124 @@
+<anvil-form layout="Humbeat.Layouts.Shell">
+  <anvil-block slot="content">
+    <div class="ui-wrap lr">
+      <header class="lr-head">
+        <h1>How songs are made</h1>
+        <p class="lr-lead">A plain-words guide to music production: what a track is, why chords feel the way they do, what auto-tune actually does, and how a song moves from intro to outro. Every idea here is a button in Humbeat.</p>
+      </header>
+      <div class="lr-grid">
+        <nav class="lr-toc" aria-label="On this page">
+          <a href="#learn" data-to="lr-tracks">Tracks and parts</a>
+          <a href="#learn" data-to="lr-tempo">Tempo, key and scale</a>
+          <a href="#learn" data-to="lr-chords">Chords</a>
+          <a href="#learn" data-to="lr-drums">Drums and groove</a>
+          <a href="#learn" data-to="lr-bass">Bass</a>
+          <a href="#learn" data-to="lr-melody">Melody and hooks</a>
+          <a href="#learn" data-to="lr-voice">Recording your voice</a>
+          <a href="#learn" data-to="lr-pitch">Pitch control and auto-tune</a>
+          <a href="#learn" data-to="lr-fx">Effects</a>
+          <a href="#learn" data-to="lr-form">Song structure and transitions</a>
+          <a href="#learn" data-to="lr-lyrics">Lyrics</a>
+          <a href="#learn" data-to="lr-mix">Mixing and export</a>
+          <a href="#learn" data-to="lr-keys">Keyboard shortcuts</a>
+        </nav>
+        <article class="lr-body" anvil:name="body">
+          <section id="lr-tracks">
+            <h2>Tracks and parts</h2>
+            <p>A song is several <b>tracks</b> playing at once: drums, bass, chords, a melody, your voice. Each track is one instrument (or one voice), shown as a lane in the timeline. On a track sit <b>clips</b>: blocks of music placed at a time in the song.</p>
+            <p>In Humbeat, an instrument clip plays a <b>part</b> (a short pattern of notes or drum hits, usually 1 to 4 bars) over and over for the clip's length. Clips in every chorus can share one part, so changing the chorus drums once changes every chorus. The little ×3 on a clip tells you it is linked; <em>Make unique</em> gives it its own copy.</p>
+          </section>
+          <section id="lr-tempo">
+            <h2>Tempo, key and scale</h2>
+            <p><b>Tempo</b> is speed, in beats per minute (BPM). Ballads sit around 60 to 75, pop and house 110 to 128, trap and drill around 140 (felt at half speed, 70), punk and metal 160 and up. Tap tempo on the Home tab finds the BPM of a song in your head.</p>
+            <p>The <b>key</b> is the home note the song keeps coming back to. The <b>scale</b> is the set of seven notes that sound right in that key. Major sounds bright, minor moody, Dorian cool, Phrygian dark (the flat second is the classic metal step), harmonic minor dramatic. Changing the key moves every part up or down together; changing the scale bends the notes into the new scale.</p>
+          </section>
+          <section id="lr-chords">
+            <h2>Chords</h2>
+            <p>A <b>chord</b> is three or more notes played together. Chords are named by where they sit in the scale with Roman numerals: I is the home chord, V the one that pulls back home, vi the sad relative. A few <b>progressions</b> carry most popular music:</p>
+            <ul>
+              <li><b>I V vi IV</b>: the "four chords" of pop. Flip it to <b>vi IV I V</b> for a more emotional feel.</li>
+              <li><b>IV V iii vi</b>: a hopeful climb (hopecore, anime openings).</li>
+              <li><b>i VI III VII</b>: epic minor, the backbone of trap, synthwave and stadium pop.</li>
+              <li><b>ii V I</b> with 7th chords: smooth and jazzy, lo-fi's favourite.</li>
+              <li><b>Power chords</b> (just the root and fifth) are what make distorted guitars sound huge instead of muddy.</li>
+            </ul>
+            <p>Song &gt; Chords changes the progression of every verse, chorus or bridge at once; Humbeat rebuilds the chords, pads, bass and hooks to follow.</p>
+          </section>
+          <section id="lr-drums">
+            <h2>Drums and groove</h2>
+            <p>The <b>kick</b> (low thump) and <b>snare</b> (crack) are the backbone; the <b>hi-hats</b> keep time between them. In most pop and rock the snare lands on beats 2 and 4. <b>Four-on-the-floor</b> (a kick on every beat) is house and disco. <b>Half-time</b> (the snare on beat 3) is why trap feels slow even at 140 BPM, and its hi-hats roll in 32nd notes and triplets. Reggaeton's <b>dembow</b> is boom, ch-boom, chick.</p>
+            <p><b>Swing</b> delays every second 16th note a little, turning straight, robotic timing into the lazy bounce of lo-fi and boom bap. The drum grid: click to add a hit, Shift-click for a soft (ghost) hit, drag to paint.</p>
+          </section>
+          <section id="lr-bass">
+            <h2>Bass</h2>
+            <p>The bass plays the root of each chord, low, and locks with the kick drum: together they are the groove. Styles: long held notes (ballads), driving 8ths (rock, punk), octave jumps (disco, 80s pop), and the <b>808</b>, a booming sine wave that is both kick and bass in trap. Overlapping 808 notes slide into each other, the famous glide.</p>
+          </section>
+          <section id="lr-melody">
+            <h2>Melody and hooks</h2>
+            <p>The <b>hook</b> is the bit people hum after one listen. Good hooks are short (one or two bars), repeat, and use chord notes on the strong beats. You don't need to play an instrument: <b>Insert &gt; Hum a melody</b> listens to you, finds each note's pitch and start, snaps them into the song's key and timing, and puts them on any instrument. Hum it as a bass line and pick Bass guitar: it folds the notes down to the bass's range.</p>
+            <p>How it hears you: it follows the pitch of your voice 100 times a second (an algorithm called YIN), starts a new note when the pitch moves or you re-attack a syllable, and rounds each note to the nearest one in the scale. "Da da da" is easier to read than "mmmm".</p>
+          </section>
+          <section id="lr-voice">
+            <h2>Recording your voice</h2>
+            <ul>
+              <li><b>Wear headphones</b>, so the music doesn't leak into the microphone.</li>
+              <li>Stay a hand's width from the microphone, and keep the level meter out of the red.</li>
+              <li>Use the <b>count-in</b> (four clicks) and the <b>lyrics prompter</b>.</li>
+              <li>Record several <b>takes</b>; keep the best clip and delete the rest. File &gt; Clean up recordings removes takes no clip uses.</li>
+              <li>If your recording lands late, raise <b>Timing fix</b> on the Record tab (every computer adds a little delay).</li>
+            </ul>
+          </section>
+          <section id="lr-pitch">
+            <h2>Pitch control and auto-tune</h2>
+            <p><b>Auto-tune</b> measures the note you sing, finds the nearest note in the song's scale, and moves your voice there. <b>Retune speed</b> decides how fast: slow and it just tidies a flat note while keeping your vibrato; at zero it snaps instantly, the robotic sound of trap and mumble rap. That snap is a style, not a mistake.</p>
+            <p>Humbeat moves your voice with a method called PSOLA: it cuts the voice into tiny overlapping slices, one per vibration, and lays them closer together (higher) or further apart (lower). Because each slice keeps its own shape, you still sound like you. <b>Character</b> changes that shape on purpose: up for chipmunk, down for giant. <b>Harmony</b> makes a second voice a third, fifth or sixth above you, chosen from the scale so it always fits. <b>Double</b> adds two slightly detuned, slightly late copies left and right: the thick pop chorus sound.</p>
+          </section>
+          <section id="lr-fx">
+            <h2>Effects</h2>
+            <dl class="lr-dl">
+              <div><dt>Reverb</dt><dd>The sound of a room, from a small booth to a cathedral. Hopecore and ballads use a lot; rap very little.</dd></div>
+              <div><dt>Echo (delay)</dt><dd>Repeats in time with the song (a dotted 8th note). Makes the ends of lines float.</dd></div>
+              <div><dt>Drive</dt><dd>Distortion: warm crunch to full metal fuzz. Also the grit on an 808.</dd></div>
+              <div><dt>Warmth and Air</dt><dd>EQ: more or less low end, more or less sparkle.</dd></div>
+              <div><dt>Punch</dt><dd>Compression: keeps loud and quiet moments closer, so a part sits forward and steady.</dd></div>
+              <div><dt>Tone</dt><dd>A filter that darkens a sound (muffled, underwater) or leaves it bright.</dd></div>
+              <div><dt>Wide</dt><dd>Chorus: a slightly moving copy that makes pads and guitars feel wide.</dd></div>
+              <div><dt>Lo-fi</dt><dd>Fewer bits and less treble: the worn cassette sound of lo-fi hip hop.</dd></div>
+            </dl>
+          </section>
+          <section id="lr-form">
+            <h2>Song structure and transitions</h2>
+            <p>Most songs repeat a few <b>sections</b>: intro, verse (the story), pre-chorus (the build), chorus (the feeling, the title), bridge (the twist), outro. Dance music has a breakdown and a <b>drop</b>. Arrangement is mostly about what is <em>missing</em>: a verse without the pad, a bridge without drums, so the chorus feels bigger when everything comes in.</p>
+            <p><b>Transitions</b> tell the listener something new is coming: a drum fill, a snare build that speeds up, a riser (a whoosh rising in pitch), a filter sweep (the whole mix goes muffled, then opens), a reverse cymbal, a one-beat silence before the drop, an impact on the downbeat. Pick one for each section in Song &gt; Sections.</p>
+          </section>
+          <section id="lr-lyrics">
+            <h2>Lyrics</h2>
+            <ul>
+              <li>Write specific pictures ("your jacket on the passenger seat") rather than general feelings ("I miss you").</li>
+              <li>The chorus says the title and the feeling, and repeats.</li>
+              <li>Keep lines that sit on the same melody close in <b>syllables</b>; the lyrics pane counts them for you.</li>
+              <li>Rhymes don't have to be perfect: near rhymes (time / mind) sound more natural. Lyrics &gt; Rhymes finds both.</li>
+            </ul>
+          </section>
+          <section id="lr-mix">
+            <h2>Mixing and export</h2>
+            <p>Mixing is setting each track's level and place. Drums and voice in front, bass solid, pads behind. Pan things a little left and right to make room. Mix &gt; Auto-mix gives a good starting balance. The master keeps the total from clipping. Then <b>Mix to WAV</b> renders the whole song into a file you can play anywhere, and <b>MIDI file</b> exports every instrument part for other music apps.</p>
+          </section>
+          <section id="lr-keys">
+            <h2>Keyboard shortcuts</h2>
+            <dl class="lr-dl lr-keys">
+              <div><dt>Space</dt><dd>Play / stop</dd></div>
+              <div><dt>R</dt><dd>Record</dd></div>
+              <div><dt>Ctrl + Z, Ctrl + Shift + Z</dt><dd>Undo, redo</dd></div>
+              <div><dt>Ctrl + C, X, V, D</dt><dd>Copy, cut, paste, duplicate the selected clip</dd></div>
+              <div><dt>Delete</dt><dd>Delete the selected note or clip</dd></div>
+              <div><dt>+ and -</dt><dd>Zoom the timeline</dd></div>
+              <div><dt>Home</dt><dd>Back to the start</dd></div>
+            </dl>
+          </section>
+          <p class="lr-end"><a class="ui-btn primary lg" href="#studio">Try it in the studio <i class="ic ic-arrow"></i></a></p>
+        </article>
+      </div>
+    </div>
+  </anvil-block>
+</anvil-form>

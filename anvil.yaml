@@ -305,13 +305,14 @@ db_schema:
     server: full
     title: Users
 metadata:
-  description: "Make any song in your browser: pick a style from hopecore to heavy metal, record your voice with auto-tune, and hum a melody that becomes any instrument."
-  logo_img: "asset:icon-512.png"
-  title: "Humbeat: hum a tune, make it a song, in your browser"
+  description: 'Make any song in your browser: pick a style from hopecore to heavy metal, record your voice with auto-tune,
+    and hum a melody that becomes any instrument.'
+  logo_img: asset:icon-512.png
+  title: 'Humbeat: hum a tune, make it a song, in your browser'
 name: Humbeat
 native_deps:
   head_html: |
-    <script src="_/theme/legal-kit.js?v=d4c784e827"></script>
+    <script src="_/theme/legal-kit.js?v=4a90c39668"></script>
     <!-- seo:start (APP_MAKER/seo: edit seo/apps/humbeat.json and run seo.py, not here) -->
     <link rel="canonical" href="https://humbeat.anvil.app/">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
@@ -358,7 +359,7 @@ native_deps:
     <!-- Prepsto feedback panel: every "Submit feedback" link and button opens it (it is the only feedback channel). No floating button, no cookies, nothing loads until it is opened. Codes: APP_MAKER/prepsto-links.json -->
     <script src="https://prepsto.com/_/theme/widget.js" data-prepsto="hyng2w2" data-button="false" data-label="Submit feedback" async></script>
     <link rel="stylesheet" href="_/theme/icons.css?v=0be15c12d9">
-    <link rel="stylesheet" href="_/theme/app.css?v=12b8fd81ef">
+    <link rel="stylesheet" href="_/theme/app.css?v=fc88df580a">
     <script src="_/theme/app-kit.js?v=367552f827"></script>
     <script src="_/theme/hb-music.js?v=7629a97d58"></script>
     <script src="_/theme/hb-audio.js?v=4995cae89c"></script>

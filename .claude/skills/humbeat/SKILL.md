@@ -153,7 +153,16 @@ clips[{id, track, start, len (beats), pat | take, offset (s), gain}], patterns{i
 hits[{t, lane, v}], name}}, takes{id: {sec, key | local}}, lyrics{sectionId: text}, progs{kind: {deg, ext}}, master, loop}`.
 
 **Tables:** `songs` (owner, title, genre, doc, bpm, key_name, bars, seconds, tracks, cover_seed, share_key, shared,
-featured, plays, created, updated, is_demo), `takes` (song, owner, take_id, audio WAV, seconds, key, created, is_demo).
+featured, plays, created, updated, is_demo, finish, reacts), `takes` (song, owner, take_id, audio WAV, seconds, key, created, is_demo),
+`reactions` (song, t seconds, kind fire|love|laugh|chills, who = hashed session, created, is_demo).
+`songs.finish` / `songs.reacts` are optional columns (2026-11-20): read and written through guards
+(`Songs._finish_of/_set_finish`, `Reactions.count_of/_bump`), so the live app works before the Schema Mismatch is accepted.
+
+**Improvement round 2026-11-20:** finish line (`S.finish` / `S.markDone` in hb-studio.js, `doc.done = {hum, mix, out}`
+dates; server twin `Songs.finish_count`, keep the two in step), reactions (`server_code/Reactions.py`: public `react`,
+owner-only `song_reactions`; `HB.art.reactStrip` draws the strip; `get_shared` returns `reactions` + `made`),
+Measure my delay (`HB.voice.measureLatency` + `findClicks`, studio cmd `measurelatency`, saves `latency` in UI.store).
+Demo songs get a few demo reactions on Admin > Demo data > reload.
 Server: Songs.py (list/get/create/save/rename/delete/duplicate/share, get_shared, record_play, get_spotlight; others'
 shared/featured/demo songs are readable but `can_edit` False = sandbox), Takes.py (save_take WAV only <= 13 MB, endpoint
 `/_/api/take/<key>` with ranges, ETag, no-cache), Admin.py (admin_songs / admin_feature / admin_unshare).

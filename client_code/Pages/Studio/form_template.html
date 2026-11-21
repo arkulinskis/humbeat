@@ -26,6 +26,17 @@
             <anvil-component type="LinearPanel" name="ribbon_host" prop:role='["rb-hostpanel"]'></anvil-component>
           </div>
         </div>
+        <div class="st-finish" anvil:name="finish_box" role="group" aria-labelledby="st-fin-h">
+          <span class="st-fin-h" id="st-fin-h">Finish line</span>
+          <div class="st-fin-steps">
+            <button type="button" class="fin" data-step="style" anvil:name="fin_style" anvil:on-dom:click="self.fin_click"><i class="ic ic-music fin-todo" aria-hidden="true"></i><i class="ic ic-check fin-done" aria-hidden="true"></i><span>Style</span></button>
+            <button type="button" class="fin" data-step="sound" anvil:name="fin_sound" anvil:on-dom:click="self.fin_click"><i class="ic ic-mic fin-todo" aria-hidden="true"></i><i class="ic ic-check fin-done" aria-hidden="true"></i><span>Your sound</span></button>
+            <button type="button" class="fin" data-step="words" anvil:name="fin_words" anvil:on-dom:click="self.fin_click"><i class="ic ic-text fin-todo" aria-hidden="true"></i><i class="ic ic-check fin-done" aria-hidden="true"></i><span>Words</span></button>
+            <button type="button" class="fin" data-step="mix" anvil:name="fin_mix" anvil:on-dom:click="self.fin_click"><i class="ic ic-mixer fin-todo" aria-hidden="true"></i><i class="ic ic-check fin-done" aria-hidden="true"></i><span>Mix check</span></button>
+            <button type="button" class="fin" data-step="out" anvil:name="fin_out" anvil:on-dom:click="self.fin_click"><i class="ic ic-share fin-todo" aria-hidden="true"></i><i class="ic ic-check fin-done" aria-hidden="true"></i><span>Share or export</span></button>
+          </div>
+          <anvil-component type="Label" name="finish_label" prop:role='["st-fin-count"]'></anvil-component>
+        </div>
         <div class="st-banner" anvil:name="banner">
           <anvil-component type="Label" name="banner_label" prop:role='["st-banner-text"]'></anvil-component>
           <anvil-component type="Button" name="banner_button" prop:role='["btn", "btn-sm", "btn-primary"]'></anvil-component>

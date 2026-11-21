@@ -23,6 +23,9 @@ class RecordTab(RecordTabTemplate):
         rb.toggle(self.click_button, s.get("metronome"), rb.SMALL + ["ic-metronome"])
         rb.toggle(self.prompter_button, s.get("prompter"), rb.SMALL + ["ic-text"])
         self.latency_slider.set_quiet(s.get("latency") or 0)
+        measuring = bool(s.get("measuring"))
+        self.measure_button.text = "Listening..." if measuring else "Measure my delay"
+        self.measure_button.enabled = not measuring and s.get("mode") == "idle"
 
     @handle("rec_button", "click")
     def rec_button_click(self, **event_args):
@@ -51,6 +54,10 @@ class RecordTab(RecordTabTemplate):
     @handle("mic_button", "click")
     def mic_button_click(self, **event_args):
         self.page.test_mic()
+
+    @handle("measure_button", "click")
+    def measure_button_click(self, **event_args):
+        self.page.cmd("measurelatency")
 
     @handle("latency_slider", "change")
     def latency_slider_change(self, value, final, **event_args):

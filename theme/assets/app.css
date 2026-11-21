@@ -1084,3 +1084,59 @@ input[type=range] { accent-color: var(--c-brand-fill); }
 @media (max-width: 800px) { .ytf .ytf-in { grid-template-columns: minmax(0, 1fr); gap: 22px; } .ytf .ytf-frame { box-shadow: 5px 5px 0 var(--c-accent); } }
 @media (max-width: 480px) { .ytf .ytf-play svg { width: 56px; height: 40px; } }
 @media (prefers-reduced-motion: reduce) { .ytf .ytf-cover img, .ytf .ytf-play { transition: none; } .ytf .ytf-cover:hover img { transform: none; } }
+
+/* ===== improvement round 2026-11-20 ===== */
+/* the finish line (studio): five steps from idea to finished song */
+.st-finish { position: relative; display: flex; align-items: center; gap: 8px 12px; margin: 0 0 8px; padding: 6px 0; overflow-x: auto; scrollbar-width: none; }
+.st-finish::-webkit-scrollbar { display: none; }
+.st-fin-h { font: 800 1rem/1 var(--font-display); white-space: nowrap; }
+.st-fin-steps { position: relative; display: flex; gap: 6px; flex: none; }
+.fin { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 5px 12px 5px 10px; border: 1.5px solid var(--c-line); border-radius: 999px;
+  background: var(--c-bg); color: var(--c-muted); font: 600 .85rem/1 var(--font-body); white-space: nowrap; cursor: pointer;
+  transition: background-color var(--dur-fast) ease, border-color var(--dur-fast) ease, color var(--dur-fast) ease, transform var(--dur-press) var(--ease-out); }
+.fin:hover { border-color: var(--c-ink); color: var(--c-ink); }
+.fin:active { transform: scale(.97); }
+.fin:focus-visible { outline: 3px solid var(--c-brand); outline-offset: 2px; }
+.fin .ic { width: 16px; height: 16px; }
+.fin .fin-done { display: none; }
+.fin.on { background: var(--c-good-soft); border-color: var(--c-good); color: var(--c-ink); }
+.fin.on .fin-done { display: inline-block; color: var(--c-good); }
+.fin.on .fin-todo { display: none; }
+.anvil-role-st-fin-count { font: 600 .85rem/1 var(--font-num); color: var(--c-muted); white-space: nowrap; }
+.st-finish.all .anvil-role-st-fin-count { font: 900 1.15rem/1 var(--font-display); color: var(--c-brand-ink); background: var(--c-sun); border: 2px solid var(--c-ink-line);
+  border-radius: var(--radius-sm); padding: 4px 10px; transform: rotate(-3deg); animation: fin-stamp var(--dur-slow) var(--ease-expo) both; }
+@keyframes fin-stamp { from { transform: scale(1.5) rotate(-9deg); opacity: 0; } to { transform: rotate(-3deg); opacity: 1; } }
+
+/* song cards: the stage stamp */
+.anvil-role-sc-stage { display: inline-block; margin-top: 6px; padding: 2px 8px; border: 1.5px solid var(--c-ink-line); border-radius: var(--radius-sm);
+  font: 700 .78rem/1.4 var(--font-body); color: var(--c-ink); background: var(--c-surface); }
+.anvil-role-sc-stage.anvil-role-sc-stage-building { background: var(--c-accent-soft); }
+.anvil-role-sc-stage.anvil-role-sc-stage-almost { background: var(--c-brand-soft); }
+.anvil-role-sc-stage.anvil-role-sc-stage-finished { background: var(--c-sun); color: #111111; transform: rotate(-2deg); }
+
+/* share dialog: reactions so far */
+.anvil-role-shd-reacts { margin-top: 10px; font-size: .92rem; color: var(--c-ink); }
+
+/* listen page: react to a moment */
+.ls-react { margin: 6px 0 4px; display: grid; gap: 8px; }
+.ls-react-h { font: 800 1.05rem/1 var(--font-display); }
+.ls-react-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+.anvil-role-ls-r > button::before { color: var(--rc, currentColor); }
+.anvil-role-ls-r-fire { --rc: var(--tk-4); } .anvil-role-ls-r-love { --rc: var(--tk-0); }
+.anvil-role-ls-r-laugh { --rc: var(--c-warn); } .anvil-role-ls-r-chills { --rc: var(--c-accent); }
+.anvil-role-ls-r > button:active { transform: scale(.94); }
+.ls-strip { position: relative; height: 44px; border-bottom: 2px solid var(--c-ink-line); overflow: hidden; }
+.ls-strip .rs-line { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--c-line); }
+.ls-strip .rs-m { position: absolute; bottom: 0; width: 4px; margin-left: -2px; border-radius: 2px 2px 0 0; background: var(--c-muted); opacity: .9; }
+.ls-strip .rs-fire { background: var(--tk-4); } .ls-strip .rs-love { background: var(--tk-0); }
+.ls-strip .rs-laugh { background: var(--tk-2); } .ls-strip .rs-chills { background: var(--tk-1); }
+.ls-strip .rs-new { animation: rs-pop var(--dur-slow) var(--ease-expo) both; transform-origin: bottom; }
+@keyframes rs-pop { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.ls-strip .rs-head { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--c-ink); left: 0; }
+
+/* listen page: made by a person */
+.ls-made { margin-top: 26px; border-top: 2px solid var(--c-ink-line); padding-top: 14px; }
+.ls-made h2 { font-size: 1.25rem; display: flex; align-items: center; gap: 8px; margin: 0 0 6px; }
+.anvil-role-ls-made-facts { font-size: 1rem; max-width: 60ch; }
+.ls-made-note { color: var(--c-muted); font-size: .875rem; max-width: 60ch; margin: 8px 0 0; }
+@media (prefers-reduced-motion: reduce) { .st-finish.all .anvil-role-st-fin-count, .ls-strip .rs-new { animation: none; } }

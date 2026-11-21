@@ -12,6 +12,7 @@ import datetime as dt
 from anvil.tables import app_tables
 
 from . import common as C
+from . import Reactions
 
 GENRE_BPM = {"hopecore": 78, "mumble": 140, "metal": 160, "pop80": 117, "teenpop": 96, "storypop": 120, "lofi": 82, "house": 124,
              "synthwave": 100, "reggaeton": 94, "poppunk": 172, "drill": 142, "afrobeats": 104, "ballad": 68, "futurebass": 150,
@@ -35,7 +36,7 @@ DEMO_SONGS = [
     (2, "Sunshine on My Skin", "afrobeats", 13, 377, 15),
     (0, "Hallway Light", "ballad", 3, 96, 30),
 ]
-DEMO_TABLES = ["takes", "songs"]  # children before parents
+DEMO_TABLES = ["reactions", "takes", "songs"]  # children before parents
 
 
 def state():
@@ -58,17 +59,27 @@ def load():
     for i, (who, title, genre, seed, plays, days) in enumerate(DEMO_SONGS):
         bpm = GENRE_BPM[genre]
         when = C.now() - dt.timedelta(days=days, hours=i)
-        app_tables.songs.add_row(owner=users[who], title=title, genre=genre, doc={"from_recipe": genre, "seed": seed, "title": title},
+        row = app_tables.songs.add_row(owner=users[who], title=title, genre=genre, doc={"from_recipe": genre, "seed": seed, "title": title},
                                  bpm=bpm, key_name="", bars=56, seconds=int(56 * 4 * 60 / bpm), tracks=5, cover_seed=seed * 97 + 13,
                                  share_key="demo-%s-%02d-song" % (genre, i), shared=True, featured=True, plays=plays,
                                  created=when, updated=when, is_demo=True)
+        try:
+            Reactions.add_demo(row, seed)
+        except Exception:
+            pass  # the reactions table isn't there until the schema change is accepted
     C.set_setting("demo", "loaded")
     return counts()
 
 
 def remove(remember=True):
+    for song in app_tables.songs.search(is_demo=True):
+        Reactions.delete_for(song)  # listeners' taps on demo songs too (they aren't flagged is_demo)
     for name in DEMO_TABLES:
-        for r in getattr(app_tables, name).search(is_demo=True):
+        try:
+            rows = list(getattr(app_tables, name).search(is_demo=True))
+        except Exception:
+            rows = []  # a table the live database doesn't have yet
+        for r in rows:
             r.delete()
     for u in app_tables.users.search(is_demo=True):
         u.delete()
@@ -80,5 +91,8 @@ def remove(remember=True):
 def counts():
     out = {"users": len(app_tables.users.search(is_demo=True))}
     for name in DEMO_TABLES:
-        out[name] = len(getattr(app_tables, name).search(is_demo=True))
+        try:
+            out[name] = len(getattr(app_tables, name).search(is_demo=True))
+        except Exception:
+            out[name] = 0
     return out

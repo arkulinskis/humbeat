@@ -14,7 +14,7 @@ import anvil.tables as tables
 from anvil.tables import app_tables
 
 from . import common as C
-from . import DemoData, Takes
+from . import DemoData, Reactions, Takes
 
 GENRES = {"hopecore", "mumble", "metal", "pop80", "teenpop", "storypop", "lofi", "house", "synthwave", "reggaeton",
           "poppunk", "drill", "afrobeats", "ballad", "futurebass", "hyperpop", "disco", "boombap"}
@@ -49,6 +49,52 @@ def _stats(doc):
     return {"bpm": round(bpm), "key_name": key_name, "bars": bars, "seconds": int(bars * 4 * 60 / bpm), "tracks": tracks}
 
 
+SUNG = ("verse", "pre", "chorus", "bridge")
+STAGES = {1: "Idea", 2: "Building", 3: "Building", 4: "Almost there", 5: "Finished"}
+
+
+def finish_count(doc, shared=False):
+    """The finish line (the studio shows the same five steps, hb-studio.js S.finish): 1 style picked, 2 your own sound
+    (a recorded take or a hummed / beatboxed part), 3 words for the sung sections, 4 a mix check, 5 shared or exported.
+    None for demo songs (built from a recipe)."""
+    if not isinstance(doc, dict) or doc.get("from_recipe"):
+        return None
+    done = doc.get("done") if isinstance(doc.get("done"), dict) else {}
+    n = 1
+    clips = [c for c in doc.get("clips") or [] if isinstance(c, dict)]
+    if any(c.get("take") for c in clips) or done.get("hum"):
+        n += 1
+    lyrics = doc.get("lyrics") if isinstance(doc.get("lyrics"), dict) else {}
+    secs = [x for x in doc.get("sections") or [] if isinstance(x, dict)]
+    kinds = {}
+    for x in secs:
+        if x.get("kind") in SUNG:
+            kinds[x.get("kind")] = kinds.get(x.get("kind")) or bool(str(lyrics.get(x.get("id")) or "").strip())
+    if (all(kinds.values()) if kinds else any(str(v or "").strip() for v in lyrics.values())):
+        n += 1
+    if done.get("mix"):
+        n += 1
+    if done.get("out") or shared:
+        n += 1
+    return n
+
+
+def _finish_of(r):
+    try:
+        v = r["finish"]
+        return int(v) if v else None
+    except Exception:
+        return None
+
+
+def _set_finish(r, doc):
+    """Guarded: songs.finish is optional until the schema change is accepted."""
+    try:
+        r["finish"] = finish_count(doc, bool(r["shared"]))
+    except Exception:
+        pass
+
+
 def _clean_doc(doc):
     """The browser's JSON text (or dict) -> a dict we are willing to store, or a message."""
     if isinstance(doc, str):
@@ -81,6 +127,10 @@ def _summary(r, me):
            "by": C.name_of(r["owner"])}
     if mine:
         out["share_key"] = r["share_key"] if r["shared"] else None
+        n = _finish_of(r)
+        out["finish"] = n
+        out["stage"] = STAGES.get(n or 0, "")
+        out["reacts"] = Reactions.count_of(r)
     return out
 
 
@@ -138,6 +188,7 @@ def create_song(title, genre, doc):
     st = _stats(clean)
     r = app_tables.songs.add_row(owner=me, title=clean["title"], genre=genre, doc=clean, cover_seed=secrets.randbelow(99999) + 1,
                                  shared=False, featured=False, plays=0, created=C.now(), updated=C.now(), is_demo=False, **st)
+    _set_finish(r, clean)
     return C.ok(song=_summary(r, me))
 
 
@@ -152,7 +203,8 @@ def save_song(song_id, doc):
         return C.fail(err or "The song arrived damaged.")
     genre = clean.get("genre") if clean.get("genre") in GENRES else r["genre"]
     r.update(doc=clean, title=clean["title"], genre=genre, updated=C.now(), **_stats(clean))
-    return C.ok(updated=C.iso(r["updated"]))
+    _set_finish(r, clean)
+    return C.ok(updated=C.iso(r["updated"]), finish=_finish_of(r))
 
 
 @anvil.server.callable(require_user=True)
@@ -179,6 +231,7 @@ def delete_song(song_id):
     if r["owner"] != me and not C.is_admin(me):
         return C.fail("You can only delete your own songs.")
     Takes.delete_for(r)
+    Reactions.delete_for(r)
     r.delete()
     return C.ok()
 
@@ -207,6 +260,7 @@ def duplicate_song(song_id, doc=None):
     if keys:
         clean["takes"] = {k: dict(v, key=keys.get(k, v.get("key"))) for k, v in (clean.get("takes") or {}).items() if isinstance(v, dict)}
         n["doc"] = clean
+    _set_finish(n, clean)
     return C.ok(song=_summary(n, me))
 
 
@@ -221,6 +275,7 @@ def share_song(song_id, on):
         r.update(shared=True, share_key=secrets.token_urlsafe(12))
     else:
         r.update(shared=False, share_key=None, featured=False)
+    _set_finish(r, r["doc"])
     return C.ok(song=_summary(r, me))
 
 
@@ -232,7 +287,38 @@ def get_shared(key):
     if r is None or not r["shared"]:
         return C.fail("This link doesn't work any more. The owner may have stopped sharing the song.")
     me = C.me()
-    return C.ok(song=dict(_summary(r, me), doc=r["doc"] or {}, takes=Takes.takes_for(r)))
+    takes = Takes.takes_for(r)
+    marks, totals = Reactions.buckets(r)
+    return C.ok(song=dict(_summary(r, me), doc=r["doc"] or {}, takes=takes, made=made_by(r, takes)),
+                reactions={"marks": marks, "totals": totals, "total": sum(totals.values())})
+
+
+def _date(d):
+    return "%d %s %d" % (d.day, d.strftime("%b"), d.year) if d else ""
+
+
+def made_by(r, takes=None):
+    """Facts for the listen page's "Made by a person" panel (None for demo songs): what this person recorded,
+    wrote and arranged, and when. Only counts, never claims."""
+    doc = r["doc"] or {}
+    if not isinstance(doc, dict) or doc.get("from_recipe"):
+        return None
+    clips = [c for c in doc.get("clips") or [] if isinstance(c, dict)]
+    used = set(c.get("take") for c in clips if c.get("take"))
+    doc_takes = doc.get("takes") if isinstance(doc.get("takes"), dict) else {}
+    sung = 0.0
+    for tid in used:
+        t = doc_takes.get(tid) or {}
+        try:
+            sung += float(t.get("sec") or (takes or {}).get(tid, {}).get("sec") or 0)
+        except (TypeError, ValueError, AttributeError):
+            pass
+    lyrics = doc.get("lyrics") if isinstance(doc.get("lyrics"), dict) else {}
+    words = sum(len(str(v or "").split()) for v in lyrics.values())
+    pats = doc.get("patterns") if isinstance(doc.get("patterns"), dict) else {}
+    hummed = sum(1 for c in clips if c.get("pat") and str((pats.get(c.get("pat")) or {}).get("name") or "") in ("Hummed melody", "Beatbox"))
+    return {"takes": len(used), "sung": int(round(sung)), "words": words, "tracks": len(doc.get("tracks") or []),
+            "hummed": hummed, "started": _date(r["created"]), "updated": _date(r["updated"]), "by": C.name_of(r["owner"])}
 
 
 @anvil.server.callable

@@ -9,6 +9,14 @@ from ._anvil_designer import StudioTemplate
 from ... import hb, router, songs, state
 
 TABS = ["file", "home", "insert", "record", "voice", "instrument", "effects", "song", "lyrics", "mix"]
+# the finish line: (step, name, ribbon tab that does it, what to do)
+FINISH = [
+    ("style", "Style", "song", "Song > Style tries another style for the same song. This step is done the moment you start."),
+    ("sound", "Your sound", "record", "Record your voice, hum a melody or beatbox a beat (Record tab): any one of them ticks this step."),
+    ("words", "Words", "lyrics", "Write words for each kind of sung section (a verse, the chorus...) in the Lyrics pane."),
+    ("mix", "Mix check", "mix", "Press Auto-mix, or set each track's volume, then listen once from start to end."),
+    ("out", "Share or export", "file", "Share a listen link (File > Share) or download the WAV, stems or MIDI."),
+]
 LENS = [("Part: 1 bar", 4), ("Part: 2 bars", 8), ("Part: 4 bars", 16), ("Part: 8 bars", 32), ("Part: 16 bars", 64)]
 
 
@@ -72,6 +80,8 @@ class Studio(StudioTemplate):
         self._lysig = ""
         self._edsig = ""
         self._mounted = False
+        self._fin_n = None
+        self._fin_sig = ""
         self.heads_panel.add_event_handler("x-track", self._track)
         self.lyrics_panel.add_event_handler("x-lyrics", self._lyrics)
         self.lyrics_panel.add_event_handler("x-melody", self._melody)
@@ -176,6 +186,8 @@ class Studio(StudioTemplate):
             window.addEventListener("pagehide", self._flush)
             self.show_tab(self.tab)
             self._changed(self.st.stateJson())
+            if self.can_edit and self.song.get("shared"):
+                self.cmd("markdone", step="out")  # songs shared before the finish line existed
             window.HB_STUDIO = self.st  # tests reach the studio here
 
     def leave(self):
@@ -266,6 +278,37 @@ class Studio(StudioTemplate):
             state.refocus(self.heads_panel, key)
         self._sync_editor(s)
         self._sync_lyrics(s)
+        self._sync_finish(s)
+
+    def _sync_finish(self, s):
+        f = s.get("finish") or {}
+        self.finish_box.visible = bool(s.get("editable"))
+        sig = json.dumps([f, s.get("editable")])
+        if sig == self._fin_sig:
+            return
+        self._fin_sig = sig
+        n = 0
+        for key, name, _tab, _hint in FINISH:
+            on = bool(f.get(key))
+            n += 1 if on else 0
+            node = getattr(self, "fin_" + key)
+            node.classes["on"] = on
+            state.set_attr(node, "aria-label", "%s: %s" % (name, "done" if on else "to do"))
+        self.finish_label.text = "Finished!" if n == 5 else "%d of 5" % n
+        self.finish_box.classes["all"] = n == 5
+        if self._fin_n is not None and n == 5 and self._fin_n < 5:
+            state.toast("Finished! All five steps are done. Share the listen link and see where people react.", "ok")
+        self._fin_n = n
+
+    def fin_click(self, event):
+        key = event.currentTarget.getAttribute("data-step")
+        for k, name, tab, hint in FINISH:
+            if k == key:
+                if k == "words" and not self.side_on:
+                    self.toggle_side()
+                self.show_tab(tab)
+                done = bool((self.s.get("finish") or {}).get(k))
+                self.status(("Done: %s. " % name if done else "") + hint)
 
     def _sync_editor(self, s):
         c = s.get("clip")
@@ -492,7 +535,8 @@ class Studio(StudioTemplate):
         from ...Dialogs.Share import Share
         if self.st is not None:
             self.st.flush()
-        alert(Share(song_id=self.song_id), buttons=[], role="app-dialog")
+        if alert(Share(song_id=self.song_id), buttons=[], role="app-dialog"):
+            self.cmd("markdone", step="out")
 
     def new_song(self):
         from ...Dialogs.NewSong import NewSong

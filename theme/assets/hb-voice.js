@@ -364,4 +364,52 @@
     return { samples: resample(samples, sr / target), sr: target };
   };
   V.resample = resample;
+
+  // ------------------------------------------------------------------ measuring the delay (speakers -> microphone)
+  // 8 short clicks through the speakers; the microphone hears each one a little later. The median delay minus what
+  // the recorder already allows for (output + base latency + 12 ms, hb-studio.js finishRecording) = the Timing fix.
+  function clickAt(ctx, t) {
+    var osc = ctx.createOscillator(), g = ctx.createGain();
+    osc.type = 'square'; osc.frequency.value = 1800;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.7, t + 0.001); g.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+    osc.connect(g); g.connect(ctx.destination); osc.start(t); osc.stop(t + 0.04);
+  }
+  V.measureLatency = function (opts) {
+    var o = opts || {}, n = o.clicks || 8, gap = 0.5, lead = 0.7;
+    return V.openMic().then(function () {
+      var ctx = HB.audio.ctx(), times = [];
+      if (ctx.state === 'suspended' && ctx.resume) ctx.resume();
+      V.startRecording();
+      var start = ctx.currentTime + lead;
+      for (var i = 0; i < n; i++) { times.push(start + i * gap); clickAt(ctx, start + i * gap); }
+      return new Promise(function (resolve) {
+        setTimeout(function () { resolve(V.findClicks(V.stopRecording(), times, ctx)); }, (lead + n * gap + 0.7) * 1000);
+      });
+    });
+  };
+  // raw = {samples, sr, t0}; times = AudioContext times of the clicks -> {ok, ms, total, hits} | {ok: false, error}
+  V.findClicks = function (raw, times, ctx) {
+    var x = raw.samples, sr = raw.sr, delays = [], i, a;
+    if (!x || !x.length) return { ok: false, error: 'The microphone sent no sound. Check it is plugged in and allowed, or use the Timing fix slider.' };
+    var blk = Math.max(1, Math.round(sr * 0.02)), peaks = [];
+    for (var b = 0; b + blk <= x.length; b += blk) { var bp = 0; for (i = b; i < b + blk; i++) { a = Math.abs(x[i]); if (a > bp) bp = a; } peaks.push(bp); }
+    peaks.sort(function (p, q) { return p - q; });
+    var floor = peaks[Math.floor(peaks.length / 2)] || 0;
+    times.forEach(function (T) {
+      var s0 = Math.max(0, Math.round((T - raw.t0 - 0.005) * sr)), s1 = Math.min(x.length, Math.round((T - raw.t0 + 0.45) * sr));
+      if (s1 - s0 < sr * 0.05) return;
+      var pk = 0;
+      for (i = s0; i < s1; i++) { a = Math.abs(x[i]); if (a > pk) pk = a; }
+      if (pk < Math.max(0.01, floor * 6)) return;
+      var th = Math.max(pk * 0.35, floor * 4);
+      for (i = s0; i < s1; i++) if (Math.abs(x[i]) >= th) { delays.push(raw.t0 + i / sr - T); break; }
+    });
+    if (delays.length < 5) return { ok: false, error: 'I couldn\'t hear the clicks clearly (' + delays.length + ' of ' + times.length + '). Unplug your headphones, turn the speakers up and try again, or use the Timing fix slider.' };
+    delays.sort(function (p, q) { return p - q; });
+    var mid = delays.slice(1, delays.length - 1), med = delays[Math.floor(delays.length / 2)];
+    if (mid[mid.length - 1] - mid[0] > 0.03) return { ok: false, error: 'The clicks came back unevenly (a noisy room?). Try again in a quiet moment, or use the Timing fix slider.' };
+    var auto = (ctx.outputLatency || 0) + (ctx.baseLatency || 0) + 0.012;
+    var ms = Math.max(-150, Math.min(300, Math.round((med - auto) * 1000 / 5) * 5));
+    return { ok: true, ms: ms, total: med * 1000, hits: delays.length };
+  };
 })(typeof window !== 'undefined' ? window : globalThis);

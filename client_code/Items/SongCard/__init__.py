@@ -29,9 +29,16 @@ class SongCard(SongCardTemplate):
             bits = [style, "%s BPM" % int(it.get("bpm") or 0), _len(it.get("seconds"))]
             if it.get("shared"):
                 bits.append("shared")
+            if it.get("reacts"):
+                bits.append(state.plural(it["reacts"], "reaction"))
             self.meta_label.text = " · ".join(bits) + " · " + (state.ago(it.get("updated")) or "")
         for a in (self.art_link, self.title_link):
             state.set_attr(a, "href", target)
+        stage = "" if spot else (it.get("stage") or "")
+        self.stage_label.visible = bool(stage)
+        if stage:
+            self.stage_label.text = stage if stage == "Finished" else "%s · %d of 5" % (stage, int(it.get("finish") or 1))
+            self.stage_label.role = ["sc-stage", "sc-stage-" + stage.split(" ")[0].lower()]
         self.actions.visible = not spot
         self.share_button.text = "Sharing" if it.get("shared") else "Share"
 

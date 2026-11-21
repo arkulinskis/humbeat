@@ -168,5 +168,33 @@
   };
   Roller.prototype.destroy = function () { clearInterval(this._t); root.cancelAnimationFrame(this._raf); HB.stopPreview(); };
 
-  HB.art = { cover: cover, wrap: wrap, Roller: Roller, MOTIF: MOTIF, hash: hash };
+  // ---- the listen page's reaction strip: one bar per moment people reacted to (height = how many), a playhead
+  // following the song. marks = [{t (s), kind: fire|love|laugh|chills, n}], fresh = the mark just added (it pops in).
+  function reactStrip(node, marks, seconds, fresh, st) {
+    if (!node) return;
+    var total = Math.max(1, Number(seconds) || 1), max = 1, list = [];
+    (marks || []).forEach(function (m) { if (m && m.t != null) list.push(m); });
+    var per = {};
+    list.forEach(function (m) { var k = Math.round(m.t * 10) + m.kind; per[k] = (per[k] || 0) + (m.n || 1); if (per[k] > max) max = per[k]; });
+    var html = '', seen = {};
+    list.forEach(function (m) {
+      var k = Math.round(m.t * 10) + m.kind; if (seen[k]) return; seen[k] = 1;
+      var left = Math.max(0, Math.min(100, m.t / total * 100)), h = 28 + 72 * Math.min(1, per[k] / max);
+      var isNew = fresh && Math.abs(fresh.t - m.t) < 0.01 && fresh.kind === m.kind;
+      html += '<span class="rs-m rs-' + esc(m.kind) + (isNew ? ' rs-new' : '') + '" style="left:' + left.toFixed(2) + '%;height:' + h.toFixed(0) + '%"></span>';
+    });
+    node.innerHTML = '<span class="rs-line"></span>' + html + '<span class="rs-head"></span>';
+    if (node._rsRaf) root.cancelAnimationFrame(node._rsRaf);
+    if (!st) return;
+    var head = node.querySelector('.rs-head');
+    var tick = function () {
+      if (!node.isConnected) return;
+      var bpm = (st.doc && st.doc.bpm) || 100, sec = (st.position ? st.position() : 0) * 60 / bpm;
+      head.style.left = Math.max(0, Math.min(100, sec / total * 100)).toFixed(2) + '%';
+      node._rsRaf = root.requestAnimationFrame(tick);
+    };
+    tick();
+  }
+
+  HB.art = { cover: cover, wrap: wrap, Roller: Roller, MOTIF: MOTIF, hash: hash, reactStrip: reactStrip };
 })(window);

@@ -1,36 +1,5 @@
 allow_embedding: false
 db_schema:
-  error_log:
-    client: none
-    columns:
-    - admin_ui: {order: 0, width: 200}
-      name: when
-      type: datetime
-    - admin_ui: {order: 1, width: 120}
-      name: source
-      type: string
-    - admin_ui: {order: 2, width: 160}
-      name: kind
-      type: string
-    - admin_ui: {order: 3, width: 300}
-      name: message
-      type: string
-    - admin_ui: {order: 4, width: 300}
-      name: traceback
-      type: string
-    - admin_ui: {order: 5, width: 200}
-      name: page
-      type: string
-    - admin_ui: {order: 6, width: 120}
-      name: session
-      type: string
-    - admin_ui: {order: 7, width: 200}
-      name: user
-      target: users
-      type: link_single
-    indexes: []
-    server: full
-    title: Error log
   app_settings:
     client: none
     columns:
@@ -47,6 +16,53 @@ db_schema:
     indexes: []
     server: full
     title: App settings
+  error_log:
+    client: none
+    columns:
+    - admin_ui:
+        order: 0
+        width: 200
+      name: when
+      type: datetime
+    - admin_ui:
+        order: 1
+        width: 120
+      name: source
+      type: string
+    - admin_ui:
+        order: 2
+        width: 160
+      name: kind
+      type: string
+    - admin_ui:
+        order: 3
+        width: 300
+      name: message
+      type: string
+    - admin_ui:
+        order: 4
+        width: 300
+      name: traceback
+      type: string
+    - admin_ui:
+        order: 5
+        width: 200
+      name: page
+      type: string
+    - admin_ui:
+        order: 6
+        width: 120
+      name: session
+      type: string
+    - admin_ui:
+        order: 7
+        width: 200
+      name: user
+      target: users
+      type: link_single
+    indexes: []
+    server: full
+    title: Error log
   feedback:
     client: none
     columns:
@@ -99,6 +115,43 @@ db_schema:
     indexes: []
     server: full
     title: Feedback
+  reactions:
+    client: none
+    columns:
+    - admin_ui:
+        order: 0
+        width: 200
+      name: song
+      target: songs
+      type: link_single
+    - admin_ui:
+        order: 1
+        width: 200
+      name: t
+      type: number
+    - admin_ui:
+        order: 2
+        width: 200
+      name: kind
+      type: string
+    - admin_ui:
+        order: 3
+        width: 200
+      name: who
+      type: string
+    - admin_ui:
+        order: 4
+        width: 200
+      name: created
+      type: datetime
+    - admin_ui:
+        order: 5
+        width: 200
+      name: is_demo
+      type: bool
+    indexes: []
+    server: full
+    title: Reactions (listeners' taps on shared songs)
   songs:
     client: none
     columns:
@@ -188,6 +241,16 @@ db_schema:
         width: 200
       name: is_demo
       type: bool
+    - admin_ui:
+        order: 17
+        width: 200
+      name: finish
+      type: number
+    - admin_ui:
+        order: 18
+        width: 200
+      name: reacts
+      type: number
     indexes: []
     server: full
     title: Songs
@@ -336,9 +399,10 @@ db_schema:
     server: full
     title: Users
 metadata:
-  description: "Make any song in your browser: pick a style from hopecore to heavy metal, record your voice with auto-tune, and hum a melody that becomes any instrument."
-  logo_img: "asset:icon-512.png"
-  title: "Humbeat: hum a tune, make it a song, in your browser"
+  description: 'Make any song in your browser: pick a style from hopecore to heavy metal, record your voice with auto-tune,
+    and hum a melody that becomes any instrument.'
+  logo_img: asset:icon-512.png
+  title: 'Humbeat: hum a tune, make it a song, in your browser'
 name: Humbeat
 native_deps:
   head_html: |
@@ -399,13 +463,13 @@ native_deps:
     <!-- Prepsto feedback panel: every "Submit feedback" link and button opens it (it is the only feedback channel). No floating button, no cookies, nothing loads until it is opened. Codes: APP_MAKER/prepsto-links.json -->
     <script src="https://prepsto.com/_/theme/widget.js" data-prepsto="hyng2w2" data-button="false" data-label="Submit feedback" async></script>
     <link rel="stylesheet" href="_/theme/icons.css?v=0be15c12d9">
-    <link rel="stylesheet" href="_/theme/app.css?v=fc88df580a">
+    <link rel="stylesheet" href="_/theme/app.css?v=3c22f0bd59">
     <script src="_/theme/app-kit.js?v=367552f827"></script>
     <script src="_/theme/hb-music.js?v=7629a97d58"></script>
     <script src="_/theme/hb-audio.js?v=4995cae89c"></script>
-    <script src="_/theme/hb-voice.js?v=d216bc7195"></script>
-    <script src="_/theme/hb-studio.js?v=e39210f6ec"></script>
-    <script src="_/theme/hb-art.js?v=87b85f9c45"></script>
+    <script src="_/theme/hb-voice.js?v=137fe1c303"></script>
+    <script src="_/theme/hb-studio.js?v=33e3c3e34c"></script>
+    <script src="_/theme/hb-art.js?v=ad63b9c4ef"></script>
 package_name: Humbeat
 runtime_options:
   client_version: '3'

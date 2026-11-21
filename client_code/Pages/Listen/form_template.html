@@ -12,11 +12,27 @@
             <span class="ls-time" anvil:dom-node="time_node" aria-hidden="true">1.1  0:00</span>
           </div>
           <anvil-component type="Label" name="status_label" prop:role='["fine-print"]'></anvil-component>
+          <div class="ls-react" anvil:name="react_box" role="group" aria-labelledby="ls-react-h">
+            <span class="ls-react-h" id="ls-react-h">React to this moment</span>
+            <div class="ls-react-btns">
+              <anvil-component type="Button" name="r_fire" prop:text="Fire" prop:role='["btn", "btn-sm", "ls-r", "ls-r-fire", "ic-flame"]'></anvil-component>
+              <anvil-component type="Button" name="r_love" prop:text="Love" prop:role='["btn", "btn-sm", "ls-r", "ls-r-love", "ic-heart"]'></anvil-component>
+              <anvil-component type="Button" name="r_laugh" prop:text="Laugh" prop:role='["btn", "btn-sm", "ls-r", "ls-r-laugh", "ic-smile"]'></anvil-component>
+              <anvil-component type="Button" name="r_chills" prop:text="Chills" prop:role='["btn", "btn-sm", "ls-r", "ls-r-chills", "ic-sparkle"]'></anvil-component>
+            </div>
+            <div class="ls-strip" anvil:dom-node="strip_node" aria-hidden="true"></div>
+            <anvil-component type="Label" name="react_label" prop:role='["fine-print"]'></anvil-component>
+          </div>
           <div class="ls-words st-prompter" anvil:dom-node="prompter_node" aria-live="polite"></div>
           <div class="ui-row ls-more">
             <a class="ui-btn" anvil:name="studio_link" href="#studio">See how it's made</a>
             <a class="ui-btn ghost" href="#landing">Make your own song</a>
           </div>
+          <aside class="ls-made" anvil:name="made_box" aria-labelledby="ls-made-h">
+            <h2 id="ls-made-h"><i class="ic ic-user" aria-hidden="true"></i> Made by a person</h2>
+            <anvil-component type="Label" name="made_label" prop:role='["ls-made-facts"]'></anvil-component>
+            <p class="ls-made-note">The instruments are played from notes in the browser and any voice you hear was sung into a microphone. Humbeat doesn't generate songs or voices with AI.</p>
+          </aside>
         </div>
       </div>
       <div class="ui-empty" anvil:name="missing">

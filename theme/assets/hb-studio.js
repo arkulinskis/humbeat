@@ -183,7 +183,54 @@
       section: { id: section.id, name: section.name, kind: section.kind, bars: section.bars, trans: section.trans || 'none',
         index: d.sections.indexOf(section), prog: HB.Doc.progression(d, section.kind) },
       sections: d.sections.map(function (s) { return { id: s.id, name: s.name, kind: s.kind, bars: s.bars, trans: s.trans || 'none', words: (d.lyrics[s.id] || '').length }; }),
-      takes: Object.keys(d.takes).length
+      takes: Object.keys(d.takes).length, finish: st.finish(), measuring: !!st.measuring
+    });
+  };
+
+  // ---- the finish line: five steps from idea to finished song (Songs.py finish_count counts the same on the server)
+  var SUNG = { verse: 1, pre: 1, chorus: 1, bridge: 1 };
+  S.finish = function () {
+    var d = this.doc, done = d.done || {}, kinds = {}, any = false;
+    d.sections.forEach(function (s) {
+      var w = !!String(d.lyrics[s.id] || '').trim();
+      if (w) any = true;
+      if (SUNG[s.kind]) kinds[s.kind] = kinds[s.kind] || w;
+    });
+    var ks = Object.keys(kinds);
+    return { style: true, sound: d.clips.some(function (c) { return !!c.take; }) || !!done.hum,
+      words: ks.length ? ks.every(function (k) { return kinds[k]; }) : any, mix: !!done.mix, out: !!done.out };
+  };
+  // mark a step done (date only); inside mutate() pass inside=true so it shares that undo step
+  S.markDone = function (step, inside) {
+    var d = this.doc;
+    if (d.done && d.done[step]) return;
+    d.done = Object.assign({}, d.done || {});
+    d.done[step] = new Date().toISOString().slice(0, 10);
+    if (!inside) this.changed(true);
+  };
+
+  // ---- measure the delay between the speakers and the microphone, and set Timing fix from it
+  S.measureLatency = function () {
+    var st = this;
+    if (st.measuring) return;
+    if (st.mode !== 'idle') st.stop();
+    st.measuring = true;
+    A.unlock();
+    st.setStatus('Listening for 8 clicks: speakers on, headphones off, and stay quiet for 5 seconds...');
+    st.changed(false);
+    V.measureLatency().then(function (r) {
+      st.measuring = false;
+      if (r.ok) {
+        st.latencyMs = r.ms;
+        try { if (root.UI && root.UI.store) root.UI.store.set('latency', r.ms); } catch (e) { /* kept for this visit only */ }
+        st.setStatus('Measured: sound takes ' + Math.round(r.total) + ' ms to go from your speakers to your microphone. Timing fix is now ' +
+          r.ms + ' ms (' + r.hits + ' of 8 clicks heard). Wear headphones again to record.', 'ok');
+      } else st.setStatus(r.error, 'error');
+      st.changed(false);
+    }, function (e) {
+      st.measuring = false;
+      st.setStatus('No microphone: ' + (e && e.message ? e.message : 'permission was not given') + '.', 'error');
+      st.changed(false);
     });
   };
 
@@ -389,6 +436,7 @@
         tr = st.addTrack(p.kind === 'drums' ? 'drums' : 'notes', o.inst, true, p.kind === 'drums' ? 'Beatbox drums' : 'Hummed ' + HB.inst(o.inst).name.toLowerCase());
         tr.role = p.kind === 'drums' ? 'drums' : 'melody';
       } else tr.inst = o.inst || tr.inst;
+      st.markDone('hum', true);
       var pid = HB.uid('p'); st.doc.patterns[pid] = { kind: p.kind, len: p.len, notes: p.notes, hits: p.hits, name: p.kind === 'drums' ? 'Beatbox' : 'Hummed melody' };
       if (p.kind === 'drums') delete st.doc.patterns[pid].notes; else delete st.doc.patterns[pid].hits;
       if (o.mode === 'replace') st.doc.clips = st.doc.clips.filter(function (c) { return !(c.track === tr.id && c.start < h.from + p.len && c.start + c.len > h.from); });
@@ -559,6 +607,7 @@
     st.mutate(function () {
       st.doc.tracks.forEach(function (t) { var r = t.kind === 'voice' ? 'voice' : t.kind === 'drums' ? 'drums' : (t.role || 'melody'); t.vol = VOL[r] || 0.65; t.pan = PAN[r] || 0; t.mute = false; t.solo = false; });
       st.doc.master.vol = 0.85;
+      st.markDone('mix', true);
     });
   };
 
@@ -644,6 +693,7 @@
     st.prepareVoices();
     return A.render(st.doc, { takeBuffer: st.takeBuffer.bind(st) }).then(function (buf) {
       download(A.wav(buf), safeName(st.doc.title) + '.wav');
+      if (st.editable) st.markDone('out');
       st.setStatus('Your WAV file is downloading (' + fmtTime(buf.duration) + ').', 'ok');
       return true;
     }, function (e) { st.setStatus('The export did not work: ' + e, 'error'); return false; });
@@ -686,14 +736,14 @@
     return st.renderStems(opts).then(function (stems) {
       var files = stems.map(function (s) { return { name: safeName(st.doc.title) + '/' + s.name.replace(/[\\/:*?"<>|]+/g, '') + '.wav', blob: A.wav(s.buffer) }; });
       return HB.zip(files).then(function (zip) {
-        if (!(opts && opts.noDownload)) download(zip, safeName(st.doc.title) + '-stems.zip');
+        if (!(opts && opts.noDownload)) { download(zip, safeName(st.doc.title) + '-stems.zip'); if (st.editable) st.markDone('out'); }
         st.setStatus('Stems ready: ' + stems.length + ' WAV files in one ZIP (' + Math.max(1, Math.round(zip.size / 1048576)) + ' MB). Drop them into any music app.', 'ok');
         return { files: files.map(function (f) { return f.name; }), size: zip.size, zip: zip, stems: stems };
       });
     }, function (e) { st.setStatus('The stems could not be made: ' + e, 'error'); throw e; });
   };
 
-  S.exportMidi = function () { download(A.midi(this.doc), safeName(this.doc.title) + '.mid'); this.setStatus('MIDI file downloading: open it in any music app.', 'ok'); };
+  S.exportMidi = function () { download(A.midi(this.doc), safeName(this.doc.title) + '.mid'); if (this.editable) this.markDone('out'); this.setStatus('MIDI file downloading: open it in any music app.', 'ok'); };
 
   // ---- the one command door for Python: st.cmd(name, jsonArgs) -> json
   S.cmd = function (name, arg) {
@@ -736,7 +786,9 @@
       case 'restyle': st.restyle(a.genre, a.keepTempo); break;
       case 'progression': st.setProgression(a.kind, a.deg, a.ext || ''); break;
       case 'automix': st.autoMix(); break;
-      case 'master': st.mutate(function () { st.doc.master.vol = clamp(a.value, 0, 1.2); }, 'master'); break;
+      case 'master': st.mutate(function () { st.doc.master.vol = clamp(a.value, 0, 1.2); st.markDone('mix', true); }, 'master'); break;
+      case 'markdone': if (st.editable && { hum: 1, mix: 1, out: 1 }[a.step]) st.markDone(a.step); break;
+      case 'measurelatency': st.measureLatency(); break;
       case 'addtrack': st.addTrack(a.kind, a.inst); break;
       case 'removetrack': st.removeTrack(a.id); break;
       case 'selecttrack': st.sel.track = a.id; st.sel.clip = null; st.changed(false); break;
@@ -750,6 +802,7 @@
           if (a.mute !== undefined) tr.mute = !!a.mute;
           if (a.solo !== undefined) tr.solo = !!a.solo;
           if (a.name !== undefined) tr.name = String(a.name).slice(0, 40) || tr.name;
+          if (a.vol !== undefined || a.pan !== undefined) st.markDone('mix', true);
         }, (a.vol !== undefined || a.pan !== undefined) ? 'mix' + tr.id : null);
         break;
       case 'instrument': st.setInstrument(a.inst); break;

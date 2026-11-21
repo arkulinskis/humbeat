@@ -15,6 +15,24 @@ class Share(ShareTemplate):
         r = anvil.server.call("get_song", song_id)
         song = r.get("song") or {}
         self._show(song.get("share_key"))
+        self._reactions()
+
+    def _reactions(self):
+        r = anvil.server.call_s("song_reactions", self.song_id)
+        if not isinstance(r, dict) or not r.get("ok"):
+            self.reacts_label.visible = False
+            return
+        total = r.get("total") or 0
+        top = r.get("top")
+        if not total:
+            self.reacts_label.text = "No reactions yet. Listeners can tap Fire, Love, Laugh or Chills while your song plays."
+            return
+        text = "%s so far." % state.plural(total, "reaction")
+        if top:
+            t = int(top.get("t") or 0)
+            where = "%d:%02d" % (t // 60, t % 60) + (" (%s)" % top["section"] if top.get("section") else "")
+            text += " The moment people react to most: %s, mostly %s." % (where, (top.get("kind_name") or "").lower())
+        self.reacts_label.text = text
 
     def _show(self, key):
         self.on_box.checked = bool(key)
@@ -43,4 +61,4 @@ class Share(ShareTemplate):
 
     @handle("done_button", "click")
     def done_button_click(self, **event_args):
-        self.raise_event("x-close-alert", value=True)
+        self.raise_event("x-close-alert", value=bool(self.on_box.checked))
